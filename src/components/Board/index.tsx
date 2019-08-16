@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from "react";
 import { fromEvent, Observable, Observer } from "rxjs";
-import { filter, map, take, tap } from "rxjs/operators";
+import { filter, map, pairwise, take, tap } from "rxjs/operators";
 
 import styles from "./styles.module.css";
 
-const subscriberFunction = (observer: Observer<string | boolean>) => {
-  observer.next("ciao");
-  observer.next("helloooo");
-  observer.next("bye");
-  observer.next(true);
-  // observer.next({ a: 123, b: "456" });
+const subscriberFunction = (ob: Observer<string | boolean>) => {
+  ob.next("ciao");
+  ob.next("helloooo");
+  ob.next("bye");
+  ob.next(true);
+  // ob.next({ a: 123, b: "456" });
 };
 
-const obs = Observable.create(subscriberFunction);
+const observable = Observable.create(subscriberFunction);
 
-const obsModified = obs.pipe(
-  take(2),
+const obsModified = observable.pipe(
+  take(40),
+  pairwise(),
   tap(x => {
     console.warn("DEBUG after take", x);
   }),
@@ -29,17 +30,70 @@ const obsModified = obs.pipe(
   })
 );
 
-const subscription = (v: any) => {
-  console.log("next value", v);
+const observer = {
+  complete: () => console.log("COMPLETE"),
+  error: (error: any) => console.log(error),
+  next: (value: string) => console.log("NEXT value", value),
 };
-obsModified.subscribe(subscription);
 
-// range(1, 10)
-//   .pipe(
-//     filter(x => x % 2 === 1),
-//     map(x => x + x)
-//   )
-//   .subscribe((x: any) => console.warn(x));
+const subscriber = obsModified.subscribe(observer);
+console.warn(
+  "observable",
+  observable,
+  "obsModified",
+  obsModified,
+  "subscriber",
+  subscriber
+);
+
+subscriber.unsubscribe();
+
+const observableOfClicks = fromEvent<MouseEvent>(document, "click");
+
+const observableOfPairClicks = observableOfClicks.pipe(pairwise());
+
+type PairClicks = [MouseEvent, MouseEvent];
+type TripletClicks = [MouseEvent, MouseEvent, MouseEvent];
+
+const makeTripletOfClicks = (events: [PairClicks, PairClicks]) => {
+  const ev0 = events[0][0];
+  const ev1 = events[0][1];
+  const ev2 = events[1][1];
+  const triplet = [ev0, ev1, ev2] as TripletClicks;
+  return triplet;
+};
+
+const observableOfTripletClicks = observableOfClicks.pipe(
+  pairwise(),
+  pairwise(),
+  map(makeTripletOfClicks)
+);
+
+const makeCircleFromPairClicks = (pair: PairClicks) => {
+  const [ev0, ev1] = pair;
+  const cx = ev0.clientX;
+  const cy = ev0.clientY;
+  const x = ev1.clientX;
+  const y = ev1.clientY;
+  const r = Math.sqrt(
+    Math.pow(Math.abs(x - cx), 2) + Math.pow(Math.abs(y - cy), 2)
+  );
+  const circle = { cx, cy, r };
+  console.warn("circle", circle);
+};
+
+observableOfPairClicks.subscribe(makeCircleFromPairClicks);
+
+const makeTriangleFromTriplet = (triplet: TripletClicks) => {
+  const [ev0, ev1, ev2] = triplet;
+  const a = { x: ev0.clientX, y: ev0.clientY };
+  const b = { x: ev1.clientX, y: ev1.clientY };
+  const c = { x: ev2.clientX, y: ev2.clientY };
+  const triangle = { a, b, c };
+  console.warn("triangle", triangle);
+};
+
+observableOfTripletClicks.subscribe(makeTriangleFromTriplet);
 
 interface IProps {
   text: string;
@@ -70,7 +124,8 @@ export const Board: React.FC<IProps> = props => {
     console.warn("effect");
     const observableEvent = fromEvent(ref.current, "click");
     observableEvent.subscribe(ev => {
-      // ev.stopPropagation();
+      ev.preventDefault();
+      ev.stopPropagation();
       const eventTarget = ev.target;
       if (!eventTarget) {
         throw new Error("ASSERT: the event has a target");
@@ -128,6 +183,13 @@ export const Board: React.FC<IProps> = props => {
             strokeWidth="3"
             fill={events.length % 2 ? "red" : "green"}
           />
+          <text
+            className={styles["circle-center"]}
+            x={events[events.length - 1].clientX}
+            y={events[events.length - 1].clientY}
+          >
+            {`x: ${events[events.length - 1].clientX}; y: ${events[events.length - 1].clientY}`}
+          </text>
         </svg>
       )}
     </div>
