@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { fromEvent, Observable, Observer } from "rxjs";
-import { filter, map, pairwise, take, tap } from "rxjs/operators";
+import { useEventCallback } from "rxjs-hooks";
+import { filter, map, pairwise, scan, take, tap } from "rxjs/operators";
 
 import {
   makeCircleFromPairClicks,
@@ -8,6 +9,7 @@ import {
   myObserver,
 } from "./observers";
 
+import { EventsList } from "../EventsList";
 import styles from "./styles.module.css";
 
 const subscriberFunction = (ob: Observer<string | boolean>) => {
@@ -95,8 +97,8 @@ export const TEST_ID_CONTAINER = "board-container-test-id";
 export const Board: React.FC<IProps> = props => {
   const { text } = props;
 
-  const [clicks, setClicks] = useState(0);
-  const [events, setEvents] = useState<IEvent[]>([]);
+  // const [clicks, setClicks] = useState(0);
+  // const [events, setEvents] = useState<IEvent[]>([]);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -104,46 +106,47 @@ export const Board: React.FC<IProps> = props => {
     if (!ref.current) {
       throw new Error("ASSERT: ref.current is mounted in the DOM");
     }
-    console.warn("effect", setEvents);
+    // console.warn("effect", setEvents);
     const observableEvent = fromEvent(ref.current, "click");
     const subscription = observableEvent.subscribe(myObserver);
-    //   setEvents([
-    //     ...events,
-    //     {
-    //       clientX,
-    //       clientY,
-    //       timestamp: ev.timeStamp,
-    //       x: domRect.x,
-    //       y: domRect.y,
-    //     },
-    //   ]);
-    // });
     console.log(
       "Remember to unsubscribe with subscription.unsubscribe()",
       subscription
     );
-  }, [ref, events]);
+  }, [ref]);
 
-  const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    setClicks(clicks + 1);
+  const accumulator = (
+    acc: IEvent[],
+    ev: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
+    return [
+      ...acc,
+      {
+        clientX: ev.clientX,
+        clientY: ev.clientY,
+        timestamp: ev.timeStamp,
+        x: ev.screenX,
+        y: ev.screenY,
+      },
+    ];
   };
+
+  const [clickCallback, events] = useEventCallback<
+    React.MouseEvent<HTMLElement, MouseEvent>,
+    IEvent[]
+  >(event$ => {
+    return event$.pipe(scan(accumulator, []));
+  }, []);
 
   return (
     <div
       className={styles.board}
       data-testid={TEST_ID_CONTAINER}
-      onClick={onClick}
+      onClick={clickCallback}
       ref={ref}
     >
-      <h1>{`${text} (${clicks} clicks)`}</h1>
-      <p>{"Events"}</p>
-      <ol>
-        {events.map(ev => (
-          <li
-            key={ev.timestamp}
-          >{`Timestamp: ${ev.timestamp} x: ${ev.x}; y: ${ev.y} clientX: ${ev.clientX} clientY: ${ev.clientY}`}</li>
-        ))}
-      </ol>
+      <h1>{text}</h1>
+      <EventsList events={events} />
       {events.length && (
         <svg
           height="100%"

@@ -30,7 +30,8 @@
   "dependencies": {
     "react": "16.9.0",
     "react-dom": "16.9.0",
-    "rxjs": "^6.5.2"
+    "rxjs": "^6.5.2",
+    "rxjs-hooks": "^0.5.1"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",
