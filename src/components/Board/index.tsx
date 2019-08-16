@@ -2,6 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { fromEvent, Observable, Observer } from "rxjs";
 import { filter, map, pairwise, take, tap } from "rxjs/operators";
 
+import {
+  makeCircleFromPairClicks,
+  makeTriangleFromTriplet,
+  myObserver,
+} from "./observers";
+
 import styles from "./styles.module.css";
 
 const subscriberFunction = (ob: Observer<string | boolean>) => {
@@ -69,30 +75,7 @@ const observableOfTripletClicks = observableOfClicks.pipe(
   map(makeTripletOfClicks)
 );
 
-const makeCircleFromPairClicks = (pair: PairClicks) => {
-  const [ev0, ev1] = pair;
-  const cx = ev0.clientX;
-  const cy = ev0.clientY;
-  const x = ev1.clientX;
-  const y = ev1.clientY;
-  const r = Math.sqrt(
-    Math.pow(Math.abs(x - cx), 2) + Math.pow(Math.abs(y - cy), 2)
-  );
-  const circle = { cx, cy, r };
-  console.warn("circle", circle);
-};
-
 observableOfPairClicks.subscribe(makeCircleFromPairClicks);
-
-const makeTriangleFromTriplet = (triplet: TripletClicks) => {
-  const [ev0, ev1, ev2] = triplet;
-  const a = { x: ev0.clientX, y: ev0.clientY };
-  const b = { x: ev1.clientX, y: ev1.clientY };
-  const c = { x: ev2.clientX, y: ev2.clientY };
-  const triangle = { a, b, c };
-  console.warn("triangle", triangle);
-};
-
 observableOfTripletClicks.subscribe(makeTriangleFromTriplet);
 
 interface IProps {
@@ -121,31 +104,24 @@ export const Board: React.FC<IProps> = props => {
     if (!ref.current) {
       throw new Error("ASSERT: ref.current is mounted in the DOM");
     }
-    console.warn("effect");
+    console.warn("effect", setEvents);
     const observableEvent = fromEvent(ref.current, "click");
-    observableEvent.subscribe(ev => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      const eventTarget = ev.target;
-      if (!eventTarget) {
-        throw new Error("ASSERT: the event has a target");
-      }
-      const div = eventTarget as HTMLDivElement;
-      const domRect = div.getBoundingClientRect() as DOMRect;
-      const clientX = (ev as MouseEvent).clientX;
-      const clientY = (ev as MouseEvent).clientY;
-      console.warn("DOM Rect", domRect, "event", ev);
-      setEvents([
-        ...events,
-        {
-          clientX,
-          clientY,
-          timestamp: ev.timeStamp,
-          x: domRect.x,
-          y: domRect.y,
-        },
-      ]);
-    });
+    const subscription = observableEvent.subscribe(myObserver);
+    //   setEvents([
+    //     ...events,
+    //     {
+    //       clientX,
+    //       clientY,
+    //       timestamp: ev.timeStamp,
+    //       x: domRect.x,
+    //       y: domRect.y,
+    //     },
+    //   ]);
+    // });
+    console.log(
+      "Remember to unsubscribe with subscription.unsubscribe()",
+      subscription
+    );
   }, [ref, events]);
 
   const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
