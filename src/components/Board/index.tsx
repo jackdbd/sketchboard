@@ -37,7 +37,7 @@ export const Board: React.FC<IProps> = props => {
     if (!ref.current) {
       throw new Error("ASSERT: ref.current is mounted in the DOM");
     }
-    // console.warn("effect", ref.current, fromEvent);
+    console.warn("effect");
     const observableEvent = fromEvent(ref.current, "click");
     observableEvent.subscribe(ev => {
       // ev.stopPropagation();
@@ -48,7 +48,7 @@ export const Board: React.FC<IProps> = props => {
       const div = eventTarget as HTMLDivElement;
       const domRect = div.getBoundingClientRect() as DOMRect;
       const clientX = (ev as MouseEvent).clientX;
-      const clientY = (ev as MouseEvent).clientX;
+      const clientY = (ev as MouseEvent).clientY;
       console.warn("DOM Rect", domRect, "event", ev);
       setEvents([
         ...events,
@@ -61,7 +61,7 @@ export const Board: React.FC<IProps> = props => {
         },
       ]);
     });
-  });
+  }, [ref, events]);
 
   const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setClicks(clicks + 1);
@@ -76,13 +76,30 @@ export const Board: React.FC<IProps> = props => {
     >
       <h1>{`${text} (${clicks} clicks)`}</h1>
       <p>{"Events"}</p>
-      <ul>
+      <ol>
         {events.map(ev => (
           <li
             key={ev.timestamp}
           >{`Timestamp: ${ev.timestamp} x: ${ev.x}; y: ${ev.y} clientX: ${ev.clientX} clientY: ${ev.clientY}`}</li>
         ))}
-      </ul>
+      </ol>
+      {events.length && (
+        <svg
+          height="100%"
+          width="100%"
+          viewBox="0 0 600 400"
+          style={{ outline: "1px dashed orange" }}
+        >
+          <circle
+            cx={events[events.length - 1].clientX}
+            cy={events[events.length - 1].clientY}
+            r="40"
+            stroke="black"
+            strokeWidth="3"
+            fill={events.length % 2 ? "red" : "green"}
+          />
+        </svg>
+      )}
     </div>
   );
 };
