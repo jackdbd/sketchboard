@@ -1,8 +1,38 @@
 import React, { useEffect, useRef, useState } from "react";
-import { fromEvent } from "rxjs";
-// import { filter, map } from "rxjs/operators";
+import { fromEvent, Observable, Observer } from "rxjs";
+import { filter, map, take, tap } from "rxjs/operators";
 
 import styles from "./styles.module.css";
+
+const subscriberFunction = (observer: Observer<string | boolean>) => {
+  observer.next("ciao");
+  observer.next("helloooo");
+  observer.next("bye");
+  observer.next(true);
+  // observer.next({ a: 123, b: "456" });
+};
+
+const obs = Observable.create(subscriberFunction);
+
+const obsModified = obs.pipe(
+  take(2),
+  tap(x => {
+    console.warn("DEBUG after take", x);
+  }),
+  map((x: string) => `${x.toUpperCase()}`),
+  tap(x => {
+    console.warn("DEBUG after map", x);
+  }),
+  filter((x: string) => x.length > 5),
+  tap(x => {
+    console.warn("DEBUG after filter", x);
+  })
+);
+
+const subscription = (v: any) => {
+  console.log("next value", v);
+};
+obsModified.subscribe(subscription);
 
 // range(1, 10)
 //   .pipe(
