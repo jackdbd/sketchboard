@@ -1,0 +1,4 @@
+.sidebar {
+  display: grid;
+  outline: 1px solid green;
+}
