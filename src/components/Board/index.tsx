@@ -1,13 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { fromEvent, Observable, Observer } from "rxjs";
 import { useEventCallback } from "rxjs-hooks";
 import { filter, map, pairwise, scan, take, tap } from "rxjs/operators";
 
-import {
-  makeCircleFromPairClicks,
-  makeTriangleFromTriplet,
-  myObserver,
-} from "./observers";
+import { makeCircleFromPairClicks, makeTriangleFromTriplet } from "./observers";
 
 import { EventsList } from "../EventsList";
 import styles from "./styles.module.css";
@@ -28,7 +24,7 @@ const obsModified = observable.pipe(
   tap(x => {
     console.warn("DEBUG after take", x);
   }),
-  map((x: string) => `${x.toUpperCase()}`),
+  map((x: string) => `${x}`),
   tap(x => {
     console.warn("DEBUG after map", x);
   }),
@@ -97,23 +93,15 @@ export const TEST_ID_CONTAINER = "board-container-test-id";
 export const Board: React.FC<IProps> = props => {
   const { text } = props;
 
-  // const [clicks, setClicks] = useState(0);
-  // const [events, setEvents] = useState<IEvent[]>([]);
+  // const ref = useRef<HTMLDivElement>(null);
 
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) {
-      throw new Error("ASSERT: ref.current is mounted in the DOM");
-    }
-    // console.warn("effect", setEvents);
-    const observableEvent = fromEvent(ref.current, "click");
-    const subscription = observableEvent.subscribe(myObserver);
-    console.log(
-      "Remember to unsubscribe with subscription.unsubscribe()",
-      subscription
-    );
-  }, [ref]);
+  // useEffect(() => {
+  //   if (!ref.current) {
+  //     throw new Error("ASSERT: ref.current is mounted in the DOM");
+  //   }
+  //   const observableEvent = fromEvent(ref.current, "click");
+  //   observableEvent.subscribe(myObserver);
+  // }, [ref]);
 
   const accumulator = (
     acc: IEvent[],
@@ -143,7 +131,7 @@ export const Board: React.FC<IProps> = props => {
       className={styles.board}
       data-testid={TEST_ID_CONTAINER}
       onClick={clickCallback}
-      ref={ref}
+      // ref={ref}
     >
       <h1>{text}</h1>
       <EventsList events={events} />
