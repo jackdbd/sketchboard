@@ -1,18 +1,7 @@
 @import 'variables.css';
+@import 'layouts.css';
 
 * {
   background: var(--color-background);
   box-sizing: border-box;
-}
-
-/* 
-  Inject margin between individual elements via their common parent.
-  https://every-layout.dev/layouts/stack/
-*/
-.stack > * + * {
-  margin-top: 1.5rem;
-}
-
-.stack-debug {
-  background: greenyellow;
 }

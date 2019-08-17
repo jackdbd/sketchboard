@@ -1,0 +1,40 @@
+/* 
+  Inject vertical margins between individual elements via their common parent.
+  https://every-layout.dev/layouts/stack/
+*/
+.stack {
+  --h: 240;
+  --s: 75%;
+  --l: 50%;
+  --color: hsl(var(--h), var(--s), var(--l));
+  --space: var(--typography-line-height);
+}
+
+/* 
+  Reset the vertical margin for all stack-like elements (by matching class
+  values that BEGIN with 'stack').
+*/
+[class^='stack'] > * {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.stack > * + * {
+  background: var(--color);
+  margin-top: var(--space);
+}
+
+.stack-large > * + * {
+  --color: hsl(var(--h), calc(var(--s) + 25%), var(--l));
+  background: var(--color);
+  margin-top: calc(var(--space) * 2);
+}
+
+.stack-small > * + * {
+  --color: hsl(var(--h), calc(var(--s) - 25%), var(--l));
+  background: var(--color);
+  margin-top: calc(var(--space) * 0.5);
+}

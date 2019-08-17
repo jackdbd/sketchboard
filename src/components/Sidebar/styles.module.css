@@ -1,6 +1,8 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
   /* stylelint-disable-next-line unit-whitelist */
   outline: 1px solid green;
+}
+
+.select {
+  width: 100%;
 }

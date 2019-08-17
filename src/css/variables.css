@@ -1,3 +1,6 @@
 :root {
   --color-background: rebeccapurple;
+  /* stylelint-disable-next-line unit-whitelist */
+  --typography-font-size: 16px;
+  --typography-line-height: 1rem;
 }

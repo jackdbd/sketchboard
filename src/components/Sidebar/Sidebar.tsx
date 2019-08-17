@@ -29,19 +29,25 @@ export const Sidebar: React.FC<IProps> = props => {
 
   return (
     <div className={className} data-testid={TEST_ID_CONTAINER}>
-      <label htmlFor="shape-select">{label}</label>
-      <select
-        id="shape-select"
-        data-testid={TEST_ID_SELECT}
-        name="shape-selector"
-        onChange={onChange}
-      >
-        <option value={Option.Circle}>Circle</option>
-        <option value={Option.Triangle}>Triangle</option>
-        <option value={Option.BezierCurve}>Bezier Curve</option>
-      </select>
-      <p>{`You selected ${shape}`}</p>
-      <p>{`You changed ${dropdownChangesCount} times`}</p>
+      <div className="stack-small">
+        <label htmlFor="shape-select">{label}</label>
+        <select
+          className={styles.select}
+          id="shape-select"
+          data-testid={TEST_ID_SELECT}
+          name="shape-selector"
+          onChange={onChange}
+        >
+          <option value={Option.Circle}>Circle</option>
+          <option value={Option.Triangle}>Triangle</option>
+          <option value={Option.BezierCurve}>Bezier Curve</option>
+        </select>
+      </div>
+
+      <div className="stack-large">
+        <p>{`You selected ${shape}`}</p>
+        <p>{`You changed ${dropdownChangesCount} times`}</p>
+      </div>
     </div>
   );
 };
