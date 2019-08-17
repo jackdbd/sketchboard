@@ -13,8 +13,10 @@ export const App = () => {
     <div className={styles.app}>
       <Board text={'Board'} />
       <Sidebar label={'Choose a shape to draw:'} />
-      <p>{`Board was clicked ${clickCount} times`}</p>
-      <p>{`Dropdown changed ${dropdownChangesCount} times`}</p>
+      <div style={{ outline: '0.2rem solid orange' }}>
+        <p>{`Board was clicked ${clickCount} times`}</p>
+        <p>{`Dropdown changed ${dropdownChangesCount} times`}</p>
+      </div>
     </div>
   );
 };
