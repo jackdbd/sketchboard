@@ -1,8 +1,25 @@
+/* TODO: remove margins and paddings. They are just used to debug x/y coordinates in click/mouseover events */
 .board {
-  /* stylelint-disable-next-line unit-whitelist */
-  outline: 1px solid red;
+  background: rgb(16, 172, 99);
+  /* flex-grow: 1; */
+  height: 100%;
+  /* margin-left: 2rem; */
+  outline: 0.2rem solid red;
+  /* padding-left: 1rem; */
 }
 
 .circle-center {
   fill: orange;
+}
+
+.inner {
+  background: coral;
+  height: 100%;
+  outline: 0.2rem solid green;
+}
+
+.svg-board {
+  fill: orange;
+  stroke: rebeccapurple;
+  outline: 1rem dashed hotpink;
 }

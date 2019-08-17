@@ -1,29 +1,5 @@
-type PairClicks = [MouseEvent, MouseEvent];
-type TripletClicks = [MouseEvent, MouseEvent, MouseEvent];
-
-export const myObserver = {
-  complete: () => console.log('COMPLETE'),
-  error: (error: any) => {
-    throw error;
-  },
-  next: (event: Event) => {
-    // event.preventDefault();
-    // event.stopPropagation();
-    const eventTarget = event.target;
-    if (!eventTarget) {
-      throw new Error('The event must have a target');
-    }
-    if (event instanceof MouseEvent) {
-      const div = eventTarget as HTMLDivElement;
-      const domRect = div.getBoundingClientRect() as DOMRect;
-      const clientX = event.clientX;
-      const clientY = event.clientY;
-      console.warn('DOM Rect', domRect, 'event', event, clientX, clientY);
-    } else {
-      throw new Error('This event is not a mouse event');
-    }
-  },
-};
+export type PairClicks = [MouseEvent, MouseEvent];
+export type TripletClicks = [MouseEvent, MouseEvent, MouseEvent];
 
 /**
  * An observer that every time it receives a pair of click events, produces

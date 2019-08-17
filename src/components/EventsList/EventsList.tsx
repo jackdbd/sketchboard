@@ -1,19 +1,21 @@
 import React from 'react';
 
+import { Coordinates } from '../Board/types';
+
+import styles from './styles.module.css';
+
 interface IProps {
-  events: any;
+  coordinates: Coordinates[];
 }
 
 export const EventsList: React.FC<IProps> = props => {
-  const { events } = props;
+  const { coordinates } = props;
   return (
-    <div>
-      <p>{`Got ${events.length} events`}</p>
+    <div className={styles['event-list']}>
+      <p>{`Got ${coordinates.length} coordinates`}</p>
       <ol>
-        {events.map((ev: any) => (
-          <li
-            key={ev.timestamp}
-          >{`ts: ${ev.timestamp} x: ${ev.x}; y: ${ev.y} clientX: ${ev.clientX} clientY: ${ev.clientY}`}</li>
+        {coordinates.map((c, i) => (
+          <li key={`${c[0]}-${c[1]}-${i}`}>{`x: ${c[0]}; y: ${c[1]}`}</li>
         ))}
       </ol>
     </div>

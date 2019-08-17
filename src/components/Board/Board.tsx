@@ -1,66 +1,31 @@
-import React from 'react';
-import { fromEvent, Observable, Observer } from 'rxjs';
-import { useEventCallback } from 'rxjs-hooks';
-import { filter, map, pairwise, scan, take, tap } from 'rxjs/operators';
+import React, { useEffect, useRef } from 'react';
+import { fromEvent } from 'rxjs';
+import { map, pairwise, tap } from 'rxjs/operators';
 
 import { useSharedState } from '../../hooks';
-import { ShapePickerSubject } from '../Sidebar';
 import { BoardSubject } from './observables';
-import { makeCircleFromPairClicks, makeTriangleFromTriplet } from './observers';
+import {
+  makeCircleFromPairClicks,
+  makeTriangleFromTriplet,
+  PairClicks,
+  TripletClicks,
+} from './observers';
+import { Coordinates } from './types';
 
-import { EventsList } from '../EventsList';
 import styles from './styles.module.css';
 
-const subscriberFunction = (ob: Observer<string | boolean>) => {
-  ob.next('ciao');
-  ob.next('helloooo');
-  ob.next('bye');
-  ob.next(true);
-  // ob.next({ a: 123, b: "456" });
-};
+export const TEST_ID_CONTAINER = 'board-container-test-id';
+export const TEST_ID_SVG = 'board-svg-test-id';
 
-const observable = Observable.create(subscriberFunction);
-
-const obsModified = observable.pipe(
-  take(40),
-  pairwise(),
-  tap(x => {
-    console.warn('DEBUG after take', x);
-  }),
-  map((x: string) => `${x}`),
-  tap(x => {
-    console.warn('DEBUG after map', x);
-  }),
-  filter((x: string) => x.length > 5),
-  tap(x => {
-    console.warn('DEBUG after filter', x);
-  })
-);
-
-const observer = {
-  complete: () => console.log('COMPLETE'),
-  error: (error: any) => console.log(error),
-  next: (value: string) => console.log('NEXT value', value),
-};
-
-const subscriber = obsModified.subscribe(observer);
-console.warn(
-  'observable',
-  observable,
-  'obsModified',
-  obsModified,
-  'subscriber',
-  subscriber
-);
-
-subscriber.unsubscribe();
-
-const observableOfClicks = fromEvent<MouseEvent>(document, 'click');
-
-const observableOfPairClicks = observableOfClicks.pipe(pairwise());
-
-type PairClicks = [MouseEvent, MouseEvent];
-type TripletClicks = [MouseEvent, MouseEvent, MouseEvent];
+function coordinatesFromEvent(
+  event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
+): Coordinates {
+  const domRect = (event.target as HTMLDivElement).getBoundingClientRect();
+  const { clientX, clientY } = event;
+  const x = clientX - domRect.left;
+  const y = clientY - domRect.top;
+  return [x, y];
+}
 
 const makeTripletOfClicks = (events: [PairClicks, PairClicks]) => {
   const ev0 = events[0][0];
@@ -70,111 +35,100 @@ const makeTripletOfClicks = (events: [PairClicks, PairClicks]) => {
   return triplet;
 };
 
-const observableOfTripletClicks = observableOfClicks.pipe(
-  pairwise(),
-  pairwise(),
-  map(makeTripletOfClicks)
-);
+export const Board: React.FC = () => {
+  const [
+    { clickCount, coordinates, lastClick },
+    setSharedState,
+  ] = useSharedState(BoardSubject);
 
-observableOfPairClicks.subscribe(makeCircleFromPairClicks);
-observableOfTripletClicks.subscribe(makeTriangleFromTriplet);
+  const ref = useRef<HTMLDivElement>(null);
 
-interface IProps {
-  text: string;
-}
+  useEffect(() => {
+    if (!ref.current) {
+      throw new Error('ASSERT: ref NOT ready!');
+    }
 
-interface IEvent {
-  clientX: number;
-  clientY: number;
-  timestamp: number;
-  x: number;
-  y: number;
-}
+    const observableOfClicks = fromEvent<MouseEvent>(ref.current, 'click');
+    const observableOfPairClicks = observableOfClicks.pipe(pairwise());
+    const subscriptionOnCircles = observableOfPairClicks.subscribe(
+      makeCircleFromPairClicks
+    );
 
-export const TEST_ID_CONTAINER = 'board-container-test-id';
-export const TEST_ID_P = 'board-p-test-id';
+    const observableOfTripletClicks = observableOfClicks.pipe(
+      pairwise(),
+      pairwise(),
+      map(makeTripletOfClicks),
+      tap((triplet: TripletClicks) => {
+        setSharedState({
+          clickCount,
+          coordinates,
+          lastClick: [...coordinatesFromEvent(triplet[0])],
+        });
+      })
+    );
+    const subscriptionOnTriangles = observableOfTripletClicks.subscribe(
+      makeTriangleFromTriplet
+    );
 
-export const Board: React.FC<IProps> = props => {
-  const { text } = props;
+    return () => {
+      subscriptionOnCircles.unsubscribe();
+      subscriptionOnTriangles.unsubscribe();
+    };
+  }, [ref]);
 
-  const [{ clickCount }, setState] = useSharedState(BoardSubject);
-  const [{ shape }] = useSharedState(ShapePickerSubject);
-
-  const onClick = () => {
-    setState({ clickCount: clickCount + 1 });
+  const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const [x, y] = coordinatesFromEvent(event);
+    setSharedState({
+      clickCount: clickCount + 1,
+      coordinates: [...coordinates, [x, y]] as Coordinates[],
+      lastClick: [x, y] as Coordinates,
+    });
   };
 
-  // const ref = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   if (!ref.current) {
-  //     throw new Error("ASSERT: ref.current is mounted in the DOM");
-  //   }
-  //   const observableEvent = fromEvent(ref.current, "click");
-  //   observableEvent.subscribe(myObserver);
-  // }, [ref]);
-
-  const accumulator = (
-    acc: IEvent[],
-    ev: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    return [
-      ...acc,
-      {
-        clientX: ev.clientX,
-        clientY: ev.clientY,
-        timestamp: ev.timeStamp,
-        x: ev.screenX,
-        y: ev.screenY,
-      },
-    ];
+  const onMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const [x, y] = coordinatesFromEvent(event);
+    const lc: Coordinates = coordinates.length
+      ? coordinates[coordinates.length - 1]
+      : [0, 0];
+    setSharedState({
+      clickCount,
+      coordinates: [...coordinates, [x, y]] as Coordinates[],
+      lastClick: lc,
+    });
   };
-
-  const [clickCallback, events] = useEventCallback<
-    React.MouseEvent<HTMLElement, MouseEvent>,
-    IEvent[]
-  >(event$ => {
-    return event$.pipe(scan(accumulator, []));
-  }, []);
 
   return (
     <div
       className={styles.board}
       data-testid={TEST_ID_CONTAINER}
-      onClick={clickCallback}
-      // ref={ref}
+      onClick={onClick}
+      onMouseMove={onMouseMove}
+      ref={ref}
     >
-      <h1>{text}</h1>
-      <p
-        data-testid={TEST_ID_P}
-        onClick={onClick}
-        style={{ outline: '0.2rem solid orange' }}
-      >{`Draw a ${shape} (this is clickable)`}</p>
-      <EventsList events={events} />
-      {events.length && (
+      <div className={styles.inner}>
         <svg
-          height="100%"
+          className={styles['svg-board']}
+          data-testid={TEST_ID_SVG}
           width="100%"
-          viewBox="0 0 600 400"
-          style={{ outline: '1px dashed orange' }}
+          height="100%"
         >
           <circle
-            cx={events[events.length - 1].clientX}
-            cy={events[events.length - 1].clientY}
+            cx={lastClick[0]}
+            cy={lastClick[1]}
             r="40"
             stroke="black"
             strokeWidth="3"
-            fill={events.length % 2 ? 'red' : 'green'}
+            fill={'steelblue'}
           />
           <text
             className={styles['circle-center']}
-            x={events[events.length - 1].clientX}
-            y={events[events.length - 1].clientY}
+            x={lastClick[0]}
+            y={lastClick[1]}
           >
-            {`x: ${events[events.length - 1].clientX}; y: ${events[events.length - 1].clientY}`}
+            {`x: ${lastClick[0]}; y: ${lastClick[1]}`}
           </text>
         </svg>
-      )}
+      </div>
     </div>
   );
 };

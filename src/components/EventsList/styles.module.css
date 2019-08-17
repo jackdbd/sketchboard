@@ -1,0 +1,6 @@
+/* TODO: remove margins and paddings. They are just used to debug x/y coordinates in click/mouseover events */
+.event-list {
+  height: 20rem;
+  overflow: hidden;
+  overflow-y: auto;
+}

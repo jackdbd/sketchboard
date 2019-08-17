@@ -1,21 +1,23 @@
 import React from 'react';
 
-import { Board, BoardSubject } from '../Board';
+import { useSharedState } from '../../hooks';
+import { Main } from '../Main';
+import { BoardSubject } from '../Board';
 import { ShapePickerSubject, Sidebar } from '../Sidebar';
 
-import { useSharedState } from '../../hooks';
 import styles from './styles.module.css';
 
 export const App = () => {
-  const [{ clickCount }] = useSharedState(BoardSubject);
   const [{ dropdownChangesCount }] = useSharedState(ShapePickerSubject);
+  const [{ lastClick }] = useSharedState(BoardSubject);
+
   return (
     <div className={styles.app}>
-      <Board text={'Board'} />
+      <Main />
       <Sidebar label={'Choose a shape to draw:'} />
       <div style={{ outline: '0.2rem solid orange' }}>
-        <p>{`Board was clicked ${clickCount} times`}</p>
         <p>{`Dropdown changed ${dropdownChangesCount} times`}</p>
+        <p>{`Last click coordinates ${lastClick}`}</p>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import { BehaviorSubject, fromEvent } from 'rxjs';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
+import { Coordinates } from './types';
+
 const makeObservableOfClickEventsOnTarget = (
   eventTarget: FromEventTarget<MouseEvent>
 ) => {
@@ -13,6 +15,8 @@ export const makeObservableOfClickEventsOnDiv = (div: HTMLDivElement) =>
 // Initial state of the Board component.
 const initialState = {
   clickCount: 0,
+  coordinates: [] as Coordinates[],
+  lastClick: [0, 0] as Coordinates,
 };
 
 /**
