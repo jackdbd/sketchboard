@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
+import { skip } from 'rxjs/operators'
+
 
 /**
  * Reactive Hook that returns a tuple of resolved value and error.
@@ -25,4 +27,18 @@ export function useObservable<T>(observable$: Observable<T>, initialValue?: T) {
     }, [observable$]);
 
     return [value, error];
+}
+
+
+export const useSharedState = <T>(
+    subject: BehaviorSubject<T>
+): [T, typeof useState] => {
+    const [value, setState] = useState(subject.getValue())
+    useEffect(() => {
+        const sub = subject.pipe(skip(1)).subscribe(s => setState(s))
+        return () => sub.unsubscribe()
+    })
+    const newSetState = (state: T) => subject.next(state)
+    // @ts-ignore
+    return [value, newSetState]
 }
