@@ -1,4 +1,5 @@
 .board {
+  /* stylelint-disable-next-line unit-whitelist */
   outline: 1px solid red;
 }
 

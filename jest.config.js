@@ -1,4 +1,5 @@
 const config = {
+  collectCoverage: true,
   collectCoverageFrom: ['src/**/*.{js,jsx,ts,tsx}', '!src/**/*.d.ts'],
   moduleFileExtensions: ['js', 'jsx', 'json', 'ts', 'tsx'],
   moduleNameMapper: {

@@ -462,10 +462,11 @@ module.exports = function(webpackEnv) {
       ],
     },
     plugins: [
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'disabled',
-        generateStatsFile: true,
-      }),
+      isEnvProduction &&
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'disabled',
+          generateStatsFile: true,
+        }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(

@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React from 'react';
 
 import { useSharedState } from '../../hooks';
@@ -24,8 +25,10 @@ export const Sidebar: React.FC<IProps> = props => {
     });
   };
 
+  const className = clsx(styles.sidebar, 'stack', 'stack-debug');
+
   return (
-    <div className={styles.sidebar} data-testid={TEST_ID_CONTAINER}>
+    <div className={className} data-testid={TEST_ID_CONTAINER}>
       <label htmlFor="shape-select">{label}</label>
       <select
         id="shape-select"

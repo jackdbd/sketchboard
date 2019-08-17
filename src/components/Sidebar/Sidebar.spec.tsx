@@ -7,9 +7,11 @@ import { Sidebar, TEST_ID_CONTAINER, TEST_ID_SELECT } from './Sidebar';
 describe('Sidebar', () => {
   const label = 'Hello World';
 
-  it('has a div container with the expected CSS class', () => {
+  it('has a div container with the expected CSS classes', () => {
     const { getByTestId } = render(<Sidebar label={label} />);
-    expect(getByTestId(TEST_ID_CONTAINER).className).toBe('sidebar');
+    const cssClasses = getByTestId(TEST_ID_CONTAINER).classList;
+    expect(cssClasses).toContain('sidebar');
+    expect(cssClasses).toContain('stack');
   });
 
   it('has the select element starting with the expected default shape', () => {
