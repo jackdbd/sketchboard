@@ -1,7 +1,8 @@
+@import '~antd/dist/antd.css';
 @import 'variables.css';
 @import 'layouts.css';
 
 * {
-  background: var(--color-background);
+  /* background: var(--color-background); */
   box-sizing: border-box;
 }

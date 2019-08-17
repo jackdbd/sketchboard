@@ -1,3 +1,4 @@
+import { Button, Icon, Slider, Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -25,7 +26,7 @@ export const Sidebar: React.FC<IProps> = props => {
     });
   };
 
-  const className = clsx(styles.sidebar, 'stack', 'stack-debug');
+  const className = clsx(styles.sidebar, 'stack');
 
   return (
     <div className={className} data-testid={TEST_ID_CONTAINER}>
@@ -46,8 +47,38 @@ export const Sidebar: React.FC<IProps> = props => {
 
       <div className="stack-large">
         <p>{`You selected ${shape}`}</p>
-        <p>{`You changed ${dropdownChangesCount} times`}</p>
+        <p>{`You changed shape ${dropdownChangesCount} times`}</p>
       </div>
+      <div className="stack-small">
+        {'Some icons'}
+        <div style={{ outline: '0.2rem solid orange' }}>
+          <Icon type="caret-up" />
+          <Icon type="play-circle" />
+          <Icon type="radar-chart" />
+          <Icon type="heat-map" />
+        </div>
+        {'Some sliders and switches'}
+        <div style={{ outline: '0.2rem solid orange' }}>
+          <Slider defaultValue={30} disabled={true} />
+          <Slider range defaultValue={[20, 50]} disabled={false} />
+          {'Disabled:'}
+          <Switch size="small" checked={false} style={{ width: '33%' }} />
+          {'Enabled:'}
+          <Switch size="small" checked={true} style={{ width: '50%' }} />
+        </div>
+        <Button type="primary" shape="circle" icon="search" />
+        <Button type="primary">
+          <span>Button with icon</span>
+          <Icon type="taobao" />
+        </Button>
+        <Button type="dashed" icon="search">
+          Search
+        </Button>
+      </div>
+      <Button type="primary">
+        <span>Button with icon</span>
+        <Icon type="taobao" />
+      </Button>
     </div>
   );
 };

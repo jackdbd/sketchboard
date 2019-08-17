@@ -1,11 +1,14 @@
 /* 
   Inject vertical margins between individual elements via their common parent.
+  A stack should only care about vertical positioning. Colors are used just for
+  debugging purposes. By scoping a --color variable in the respective selector,
+  we can highlight different stack (e.g. small, large) with a different color.
   https://every-layout.dev/layouts/stack/
 */
 .stack {
-  --h: 240;
-  --s: 75%;
-  --l: 50%;
+  --h: 240; /* Hue */
+  --s: 75%; /* Saturation */
+  --l: 50%; /* Lightness */
   --color: hsl(var(--h), var(--s), var(--l));
   --space: var(--typography-line-height);
 }
@@ -15,26 +18,23 @@
   values that BEGIN with 'stack').
 */
 [class^='stack'] > * {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   margin-bottom: 0;
   margin-top: 0;
 }
 
 .stack > * + * {
-  background: var(--color);
+  /* background: var(--color); */
   margin-top: var(--space);
 }
 
 .stack-large > * + * {
   --color: hsl(var(--h), calc(var(--s) + 25%), var(--l));
-  background: var(--color);
+  /* background: var(--color); */
   margin-top: calc(var(--space) * 2);
 }
 
 .stack-small > * + * {
   --color: hsl(var(--h), calc(var(--s) - 25%), var(--l));
-  background: var(--color);
+  /* background: var(--color); */
   margin-top: calc(var(--space) * 0.5);
 }

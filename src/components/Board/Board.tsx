@@ -148,6 +148,7 @@ export const Board: React.FC<IProps> = props => {
       <p
         data-testid={TEST_ID_P}
         onClick={onClick}
+        style={{ outline: '0.2rem solid orange' }}
       >{`Draw a ${shape} (this is clickable)`}</p>
       <EventsList events={events} />
       {events.length && (
