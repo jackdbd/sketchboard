@@ -21,7 +21,7 @@
     "ncu": "ncu",
     "ncuu": "ncu --upgrade",
     "nuke": "rimraf node_modules && rm yarn.lock",
-    "predeploy": "yarn build",
+    "predeploy": "yarn test && yarn build",
     "stats": "webpack-bundle-analyzer build/stats.json --port 8888",
     "test": "yarn lint:css && concurrently \"yarn test:unit\" \"yarn test:regressions\"",
     "test:unit": "jest --testPathIgnorePatterns regressions --verbose",
