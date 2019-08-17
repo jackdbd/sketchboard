@@ -397,8 +397,10 @@ module.exports = function(webpackEnv) {
               test: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
+                modules: {
+                  localIdentName: '[name]__[local]--[hash:base64:5]',
+                },
                 sourceMap: isEnvProduction && shouldUseSourceMap,
-                modules: true,
               }),
             },
             // Opt-in support for SASS (using .scss or .sass extensions).
