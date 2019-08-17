@@ -1,2 +1,2 @@
-export { Board } from "./Board";
-export { BoardSubject } from "./observables";
+export { Board } from './Board';
+export { BoardSubject } from './observables';

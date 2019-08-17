@@ -1,16 +1,16 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject } from 'rxjs';
 
 // Available options for the shape picker.
 export enum Option {
-    BezierCurve = "Bezier Curve",
-    Circle = "Circle",
-    Triangle = "Triangle",
+  BezierCurve = 'Bezier Curve',
+  Circle = 'Circle',
+  Triangle = 'Triangle',
 }
 
 // Initial state of the Sidebar component.
 const initialState = {
-    dropdownChangesCount: 0,
-    shape: Option.Circle,
+  dropdownChangesCount: 0,
+  shape: Option.Circle,
 };
 
 /**

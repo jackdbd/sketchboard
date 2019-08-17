@@ -1,20 +1,20 @@
-import React from "react";
-import { fromEvent, Observable, Observer } from "rxjs";
-import { useEventCallback } from "rxjs-hooks";
-import { filter, map, pairwise, scan, take, tap } from "rxjs/operators";
+import React from 'react';
+import { fromEvent, Observable, Observer } from 'rxjs';
+import { useEventCallback } from 'rxjs-hooks';
+import { filter, map, pairwise, scan, take, tap } from 'rxjs/operators';
 
-import { useSharedState } from "../../hooks";
-import { ShapePickerSubject } from "../Sidebar";
-import { BoardSubject } from "./observables";
-import { makeCircleFromPairClicks, makeTriangleFromTriplet } from "./observers";
+import { useSharedState } from '../../hooks';
+import { ShapePickerSubject } from '../Sidebar';
+import { BoardSubject } from './observables';
+import { makeCircleFromPairClicks, makeTriangleFromTriplet } from './observers';
 
-import { EventsList } from "../EventsList";
-import styles from "./styles.module.css";
+import { EventsList } from '../EventsList';
+import styles from './styles.module.css';
 
 const subscriberFunction = (ob: Observer<string | boolean>) => {
-  ob.next("ciao");
-  ob.next("helloooo");
-  ob.next("bye");
+  ob.next('ciao');
+  ob.next('helloooo');
+  ob.next('bye');
   ob.next(true);
   // ob.next({ a: 123, b: "456" });
 };
@@ -25,37 +25,37 @@ const obsModified = observable.pipe(
   take(40),
   pairwise(),
   tap(x => {
-    console.warn("DEBUG after take", x);
+    console.warn('DEBUG after take', x);
   }),
   map((x: string) => `${x}`),
   tap(x => {
-    console.warn("DEBUG after map", x);
+    console.warn('DEBUG after map', x);
   }),
   filter((x: string) => x.length > 5),
   tap(x => {
-    console.warn("DEBUG after filter", x);
+    console.warn('DEBUG after filter', x);
   })
 );
 
 const observer = {
-  complete: () => console.log("COMPLETE"),
+  complete: () => console.log('COMPLETE'),
   error: (error: any) => console.log(error),
-  next: (value: string) => console.log("NEXT value", value),
+  next: (value: string) => console.log('NEXT value', value),
 };
 
 const subscriber = obsModified.subscribe(observer);
 console.warn(
-  "observable",
+  'observable',
   observable,
-  "obsModified",
+  'obsModified',
   obsModified,
-  "subscriber",
+  'subscriber',
   subscriber
 );
 
 subscriber.unsubscribe();
 
-const observableOfClicks = fromEvent<MouseEvent>(document, "click");
+const observableOfClicks = fromEvent<MouseEvent>(document, 'click');
 
 const observableOfPairClicks = observableOfClicks.pipe(pairwise());
 
@@ -91,8 +91,8 @@ interface IEvent {
   y: number;
 }
 
-export const TEST_ID_CONTAINER = "board-container-test-id";
-export const TEST_ID_P = "board-p-test-id";
+export const TEST_ID_CONTAINER = 'board-container-test-id';
+export const TEST_ID_P = 'board-p-test-id';
 
 export const Board: React.FC<IProps> = props => {
   const { text } = props;
@@ -155,7 +155,7 @@ export const Board: React.FC<IProps> = props => {
           height="100%"
           width="100%"
           viewBox="0 0 600 400"
-          style={{ outline: "1px dashed orange" }}
+          style={{ outline: '1px dashed orange' }}
         >
           <circle
             cx={events[events.length - 1].clientX}
@@ -163,10 +163,10 @@ export const Board: React.FC<IProps> = props => {
             r="40"
             stroke="black"
             strokeWidth="3"
-            fill={events.length % 2 ? "red" : "green"}
+            fill={events.length % 2 ? 'red' : 'green'}
           />
           <text
-            className={styles["circle-center"]}
+            className={styles['circle-center']}
             x={events[events.length - 1].clientX}
             y={events[events.length - 1].clientY}
           >

@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import { useSharedState } from "../../hooks";
-import { Option, ShapePickerSubject } from "./observables";
-import styles from "./styles.module.css";
+import { useSharedState } from '../../hooks';
+import { Option, ShapePickerSubject } from './observables';
+import styles from './styles.module.css';
 
 interface IProps {
   label: string;
 }
 
-export const TEST_ID_CONTAINER = "sidebar-container-test-id";
-export const TEST_ID_SELECT = "sidebar-select-test-id";
+export const TEST_ID_CONTAINER = 'sidebar-container-test-id';
+export const TEST_ID_SELECT = 'sidebar-select-test-id';
 
 export const Sidebar: React.FC<IProps> = props => {
   const { label } = props;

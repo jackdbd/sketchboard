@@ -1,16 +1,19 @@
-import { BehaviorSubject, fromEvent } from "rxjs";
-import { FromEventTarget } from "rxjs/internal/observable/fromEvent";
+import { BehaviorSubject, fromEvent } from 'rxjs';
+import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
-const makeObservableOfClickEventsOnTarget = (eventTarget: FromEventTarget<MouseEvent>) => {
-    return fromEvent(eventTarget, "click");
-}
+const makeObservableOfClickEventsOnTarget = (
+  eventTarget: FromEventTarget<MouseEvent>
+) => {
+  return fromEvent(eventTarget, 'click');
+};
 
-export const makeObservableOfClickEventsOnDiv = (div: HTMLDivElement) => makeObservableOfClickEventsOnTarget(div);
+export const makeObservableOfClickEventsOnDiv = (div: HTMLDivElement) =>
+  makeObservableOfClickEventsOnTarget(div);
 
 // Initial state of the Board component.
 const initialState = {
-    clickCount: 0
-}
+  clickCount: 0,
+};
 
 /**
  * Observable that emits new values to all of its subscribers every time the
