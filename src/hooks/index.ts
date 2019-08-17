@@ -35,8 +35,9 @@ export const useSharedState = <T>(
 ): [T, typeof useState] => {
     const [value, setState] = useState(subject.getValue())
     useEffect(() => {
-        const sub = subject.pipe(skip(1)).subscribe(s => setState(s))
-        return () => sub.unsubscribe()
+        const observer = (s: T) => setState(s)
+        const subscription = subject.pipe(skip(1)).subscribe(observer)
+        return () => subscription.unsubscribe()
     })
     const newSetState = (state: T) => subject.next(state)
     // @ts-ignore

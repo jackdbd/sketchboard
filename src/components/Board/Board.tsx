@@ -3,6 +3,9 @@ import { fromEvent, Observable, Observer } from "rxjs";
 import { useEventCallback } from "rxjs-hooks";
 import { filter, map, pairwise, scan, take, tap } from "rxjs/operators";
 
+import { useSharedState } from "../../hooks";
+import { ShapePickerSubject } from "../Sidebar";
+import { BoardSubject } from "./observables";
 import { makeCircleFromPairClicks, makeTriangleFromTriplet } from "./observers";
 
 import { EventsList } from "../EventsList";
@@ -89,9 +92,17 @@ interface IEvent {
 }
 
 export const TEST_ID_CONTAINER = "board-container-test-id";
+export const TEST_ID_P = "board-p-test-id";
 
 export const Board: React.FC<IProps> = props => {
   const { text } = props;
+
+  const [{ clickCount }, setState] = useSharedState(BoardSubject);
+  const [{ shape }] = useSharedState(ShapePickerSubject);
+
+  const onClick = () => {
+    setState({ clickCount: clickCount + 1 });
+  };
 
   // const ref = useRef<HTMLDivElement>(null);
 
@@ -134,6 +145,10 @@ export const Board: React.FC<IProps> = props => {
       // ref={ref}
     >
       <h1>{text}</h1>
+      <p
+        data-testid={TEST_ID_P}
+        onClick={onClick}
+      >{`Draw a ${shape} (this is clickable)`}</p>
       <EventsList events={events} />
       {events.length && (
         <svg
