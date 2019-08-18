@@ -9,7 +9,7 @@ import styles from './styles.module.css';
 
 export const App = () => {
   const [{ dropdownChangesCount }] = useSharedState(ShapePickerSubject);
-  const [{ lastClick }] = useSharedState(BoardSubject);
+  const [{ clickCount, lastClick }] = useSharedState(BoardSubject);
 
   return (
     <div className={styles.app}>
@@ -18,6 +18,7 @@ export const App = () => {
       <div style={{ outline: '0.2rem solid orange' }}>
         <p>{`Dropdown changed ${dropdownChangesCount} times`}</p>
         <p>{`Last click coordinates ${lastClick}`}</p>
+        <p>{`Click count ${clickCount}`}</p>
       </div>
     </div>
   );

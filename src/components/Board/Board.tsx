@@ -1,39 +1,27 @@
 import React, { useEffect, useRef } from 'react';
-import { fromEvent } from 'rxjs';
 import { map, pairwise, tap } from 'rxjs/operators';
 
 import { useSharedState } from '../../hooks';
-import { BoardSubject } from './observables';
 import {
-  makeCircleFromPairClicks,
+  BoardSubject,
+  makeObservableOfCircles,
+  makeObservableOfClickEventsOnDiv,
+} from './observables';
+import {
+  addCircleToBoard,
+  coordinatesFromEvent,
+  ICircle,
   makeTriangleFromTriplet,
-  PairClicks,
-  TripletClicks,
-} from './observers';
-import { Coordinates } from './types';
+  makeTripletOfClicks,
+} from './utils';
 
 import styles from './styles.module.css';
+import { Coords, TripletClicks } from './types';
 
 export const TEST_ID_CONTAINER = 'board-container-test-id';
 export const TEST_ID_SVG = 'board-svg-test-id';
 
-function coordinatesFromEvent(
-  event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
-): Coordinates {
-  const domRect = (event.target as HTMLDivElement).getBoundingClientRect();
-  const { clientX, clientY } = event;
-  const x = clientX - domRect.left;
-  const y = clientY - domRect.top;
-  return [x, y];
-}
-
-const makeTripletOfClicks = (events: [PairClicks, PairClicks]) => {
-  const ev0 = events[0][0];
-  const ev1 = events[0][1];
-  const ev2 = events[1][1];
-  const triplet = [ev0, ev1, ev2] as TripletClicks;
-  return triplet;
-};
+const REF_NOT_READY = 'ASSERT: ref NOT ready!';
 
 export const Board: React.FC = () => {
   const [
@@ -41,19 +29,41 @@ export const Board: React.FC = () => {
     setSharedState,
   ] = useSharedState(BoardSubject);
 
-  const ref = useRef<HTMLDivElement>(null);
+  const refDiv = useRef<HTMLDivElement>(null);
+  const refSvg = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    if (!ref.current) {
-      throw new Error('ASSERT: ref NOT ready!');
+    if (!refDiv.current) {
+      throw new Error(REF_NOT_READY);
     }
 
-    const observableOfClicks = fromEvent<MouseEvent>(ref.current, 'click');
-    const observableOfPairClicks = observableOfClicks.pipe(pairwise());
-    const subscriptionOnCircles = observableOfPairClicks.subscribe(
-      makeCircleFromPairClicks
+    // TODO: make another useEffect?
+    if (!refSvg.current) {
+      throw new Error(REF_NOT_READY);
+    }
+
+    const observableOfCircles = makeObservableOfCircles(refDiv.current);
+
+    const observerOfCircles = (c: ICircle) => {
+      if (!refSvg.current) {
+        throw new Error(REF_NOT_READY);
+      }
+      const svg = refSvg.current;
+      addCircleToBoard(svg, c);
+      setSharedState({
+        clickCount: clickCount + 1,
+        coordinates,
+        lastClick: [c.cx, c.cy] as Coords,
+      });
+    };
+
+    const subscriptionOnCircles = observableOfCircles.subscribe(
+      observerOfCircles
     );
 
+    const observableOfClicks = makeObservableOfClickEventsOnDiv(refDiv.current);
+
+    // TODO: make this observable side-effects free and perform side effects in the observer?
     const observableOfTripletClicks = observableOfClicks.pipe(
       pairwise(),
       pairwise(),
@@ -74,25 +84,25 @@ export const Board: React.FC = () => {
       subscriptionOnCircles.unsubscribe();
       subscriptionOnTriangles.unsubscribe();
     };
-  }, [ref]);
+  }, [refDiv, refSvg]);
 
   const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const [x, y] = coordinatesFromEvent(event);
     setSharedState({
       clickCount: clickCount + 1,
-      coordinates: [...coordinates, [x, y]] as Coordinates[],
-      lastClick: [x, y] as Coordinates,
+      coordinates: [...coordinates, [x, y]] as Coords[],
+      lastClick: [x, y] as Coords,
     });
   };
 
   const onMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const [x, y] = coordinatesFromEvent(event);
-    const lc: Coordinates = coordinates.length
+    const lc: Coords = coordinates.length
       ? coordinates[coordinates.length - 1]
       : [0, 0];
     setSharedState({
       clickCount,
-      coordinates: [...coordinates, [x, y]] as Coordinates[],
+      coordinates: [...coordinates, [x, y]] as Coords[],
       lastClick: lc,
     });
   };
@@ -103,14 +113,15 @@ export const Board: React.FC = () => {
       data-testid={TEST_ID_CONTAINER}
       onClick={onClick}
       onMouseMove={onMouseMove}
-      ref={ref}
+      ref={refDiv}
     >
       <div className={styles.inner}>
         <svg
           className={styles['svg-board']}
           data-testid={TEST_ID_SVG}
-          width="100%"
           height="100%"
+          ref={refSvg}
+          width="100%"
         >
           <circle
             cx={lastClick[0]}

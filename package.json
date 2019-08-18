@@ -30,7 +30,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pretty-quick --staged --bail --verbose"
+      "pre-commit": "pretty-quick --staged --bail --verbose",
+      "pre-push": "yarn test:unit"
     }
   },
   "dependencies": {

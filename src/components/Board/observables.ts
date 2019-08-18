@@ -1,7 +1,9 @@
 import { BehaviorSubject, fromEvent } from 'rxjs';
+import { map, pairwise } from 'rxjs/operators';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
-import { Coordinates } from './types';
+import { Coords } from './types';
+import { makeCircleFromPairClicks } from './utils';
 
 const makeObservableOfClickEventsOnTarget = (
   eventTarget: FromEventTarget<MouseEvent>
@@ -12,11 +14,18 @@ const makeObservableOfClickEventsOnTarget = (
 export const makeObservableOfClickEventsOnDiv = (div: HTMLDivElement) =>
   makeObservableOfClickEventsOnTarget(div);
 
+export const makeObservableOfCircles = (div: HTMLDivElement) => {
+  return makeObservableOfClickEventsOnDiv(div).pipe(
+    pairwise(),
+    map(makeCircleFromPairClicks)
+  );
+};
+
 // Initial state of the Board component.
 const initialState = {
   clickCount: 0,
-  coordinates: [] as Coordinates[],
-  lastClick: [0, 0] as Coordinates,
+  coordinates: [] as Coords[],
+  lastClick: [0, 0] as Coords,
 };
 
 /**

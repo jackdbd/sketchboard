@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { Coordinates } from '../Board/types';
+import { Coords } from '../Board/types';
 
 import styles from './styles.module.css';
 
 interface IProps {
-  coordinates: Coordinates[];
+  coordinates: Coords[];
 }
 
 export const EventsList: React.FC<IProps> = props => {
