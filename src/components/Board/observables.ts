@@ -21,8 +21,13 @@ export const makeObservableOfCircles = (div: HTMLDivElement) => {
   );
 };
 
-// Initial state of the Board component.
-const initialState = {
+interface IState {
+  clickCount: number;
+  coordinates: Coords[];
+  lastClick: Coords;
+}
+
+const initialState: IState = {
   clickCount: 0,
   coordinates: [] as Coords[],
   lastClick: [0, 0] as Coords,
@@ -30,6 +35,6 @@ const initialState = {
 
 /**
  * Observable that emits new values to all of its subscribers every time the
- * state of the Board changes. It starts with an initial state.
+ * state of the React component where this observable is used changes.
  */
-export const BoardSubject = new BehaviorSubject(initialState);
+export const boardSubject$ = new BehaviorSubject<IState>(initialState);

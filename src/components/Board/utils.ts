@@ -6,15 +6,17 @@ export interface ICircle {
   r: number;
 }
 
+export const euclideanDistance = (p: Coords, q: Coords) => {
+  const [x0, y0] = p;
+  const [x1, y1] = q;
+  return Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
+};
+
 export const makeCircleFromPairClicks = (pair: PairClicks): ICircle => {
   const [ev0, ev1] = pair;
   const cx = ev0.clientX;
   const cy = ev0.clientY;
-  const x = ev1.clientX;
-  const y = ev1.clientY;
-  const r = Math.sqrt(
-    Math.pow(Math.abs(x - cx), 2) + Math.pow(Math.abs(y - cy), 2)
-  );
+  const r = euclideanDistance([cx, cy], [ev1.clientX, ev1.clientY]);
   return { cx, cy, r };
 };
 
