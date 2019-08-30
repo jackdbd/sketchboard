@@ -2,31 +2,31 @@ import React, { ErrorInfo } from 'react';
 
 import styles from './styles.module.css';
 
-interface IProps {
+interface Props {
   debug?: boolean;
 }
 
-interface IState {
+interface State {
   error?: Error;
   errorInfo?: ErrorInfo;
 }
 
 export const DIV_CONTAINER_TEST_ID = 'error-boundary-div-container-test-id';
 
-export class ErrorBoundary extends React.Component<IProps, IState> {
-  constructor(props: IProps) {
+export class ErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { error: undefined, errorInfo: undefined };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({
       error,
       errorInfo,
     });
   }
 
-  public render() {
+  public render(): JSX.Element {
     const { children, debug } = this.props;
     const { error, errorInfo } = this.state;
     if (error && debug) {

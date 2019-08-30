@@ -4,11 +4,11 @@ import { Coords } from '../Board/types';
 
 import styles from './styles.module.css';
 
-interface IProps {
+interface Props {
   coordinates: Coords[];
 }
 
-export const EventsList: React.FC<IProps> = props => {
+export const EventsList: React.FC<Props> = props => {
   const { coordinates } = props;
   return (
     <div className={styles['event-list']}>

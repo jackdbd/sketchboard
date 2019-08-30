@@ -5,13 +5,24 @@ import { initialState, shapePickerSubject$, ShapeOption } from './observables';
 // we don't care about dropdownChangesCount, so we don't change it.
 const dropdownChangesCount = 0;
 
+function onShapeOptionChange(event: Event): void {
+  if (!event.target) {
+    throw new Error(
+      'ASSERT: change event is dispatched by a select element, so it always has a target'
+    );
+  }
+  const value = (event.target as HTMLSelectElement).value;
+  const shape = value as ShapeOption;
+  shapePickerSubject$.next({ dropdownChangesCount, shape });
+}
+
 describe('shapePickerSubject$', () => {
   let select: HTMLSelectElement;
   let defaultOption: HTMLOptionElement;
   let unselectedOption: HTMLOptionElement;
   let selectedOption: HTMLOptionElement;
-  let observer0 = jest.fn();
-  let observer1 = jest.fn();
+  const observer0 = jest.fn();
+  const observer1 = jest.fn();
   let subscription0: Subscription;
   let subscription1: Subscription;
 
@@ -79,14 +90,3 @@ describe('shapePickerSubject$', () => {
     expect(observer1).toHaveBeenLastCalledWith(newState);
   });
 });
-
-function onShapeOptionChange(event: Event) {
-  if (!event.target) {
-    throw new Error(
-      'ASSERT: change event is dispatched by a select element, so it always has a target'
-    );
-  }
-  const value = (event.target as HTMLSelectElement).value;
-  const shape = value as ShapeOption;
-  shapePickerSubject$.next({ dropdownChangesCount, shape });
-}

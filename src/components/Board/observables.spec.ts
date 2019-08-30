@@ -4,7 +4,8 @@ import {
   makeObservableOfCircles,
   makeObservableOfClickEventsOnDiv,
 } from './observables';
-import { euclideanDistance, ICircle } from './utils';
+import { ICircle } from './shapes';
+import { euclideanDistance } from './utils';
 
 const UNHANDLED_MOUSE_EVENTS = [
   'contextmenu',
@@ -21,8 +22,8 @@ describe('makeObservableOfClickEventsOnDiv', () => {
   let anotherDiv: HTMLDivElement;
   let div: HTMLDivElement;
   let observable$: Observable<MouseEvent>;
-  let observer0 = jest.fn();
-  let observer1 = jest.fn();
+  const observer0 = jest.fn();
+  const observer1 = jest.fn();
   let subscription0: Subscription;
   let subscription1: Subscription;
 
@@ -68,8 +69,8 @@ describe('makeObservableOfClickEventsOnDiv', () => {
 describe('makeObservableOfCircles', () => {
   let div: HTMLDivElement;
   let observable$: Observable<ICircle>;
-  let observer0 = jest.fn();
-  let observer1 = jest.fn();
+  const observer0 = jest.fn();
+  const observer1 = jest.fn();
   let subscription0: Subscription;
   let subscription1: Subscription;
 

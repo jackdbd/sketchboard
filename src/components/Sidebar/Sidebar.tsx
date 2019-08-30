@@ -11,17 +11,17 @@ export const SHAPE_SELECT_TEST_ID = 'sidebar-select-test-id';
 const SHAPE_SELECT_ID = 'shape-select-id';
 const SHAPE_SELECT_NAME = 'shape-selector';
 
-interface IProps {
+interface Props {
   label: string;
 }
 
-export const Sidebar: React.FC<IProps> = props => {
+export const Sidebar: React.FC<Props> = props => {
   const { label } = props;
 
   const [state, setSharedState] = useSharedState(shapePickerSubject$);
   const { dropdownChangesCount, shape } = state;
 
-  const onShapeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const onShapeChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     setSharedState({
       dropdownChangesCount: state.dropdownChangesCount + 1,
       shape: event.target.value as ShapeOption,

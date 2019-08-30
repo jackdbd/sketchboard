@@ -7,12 +7,12 @@ export enum ShapeOption {
   Triangle = 'Triangle',
 }
 
-interface IState {
+interface State {
   dropdownChangesCount: number;
   shape: ShapeOption;
 }
 
-export const initialState: IState = {
+export const initialState: State = {
   dropdownChangesCount: 0,
   shape: ShapeOption.Circle,
 };
@@ -22,4 +22,4 @@ export const initialState: IState = {
  *
  * @see http://reactivex.io/rxjs/manual/overview.html#behaviorsubject
  */
-export const shapePickerSubject$ = new BehaviorSubject<IState>(initialState);
+export const shapePickerSubject$ = new BehaviorSubject<State>(initialState);

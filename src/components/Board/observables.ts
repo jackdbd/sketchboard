@@ -1,4 +1,4 @@
-import { BehaviorSubject, fromEvent } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
 import { map, pairwise } from 'rxjs/operators';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
@@ -8,24 +8,30 @@ import {
   makeTriangleFromTriplet,
   makeTripletOfClicks,
 } from './utils';
+import { Circle } from './shapes';
 
 const makeObservableOfClickEventsOnTarget = (
   eventTarget: FromEventTarget<MouseEvent>
-) => {
+): Observable<MouseEvent> => {
   return fromEvent(eventTarget, 'click');
 };
 
-export const makeObservableOfClickEventsOnDiv = (div: HTMLDivElement) =>
-  makeObservableOfClickEventsOnTarget(div);
+export const makeObservableOfClickEventsOnDiv = (
+  div: HTMLDivElement
+): Observable<MouseEvent> => makeObservableOfClickEventsOnTarget(div);
 
-export const makeObservableOfCircles = (div: HTMLDivElement) => {
+export const makeObservableOfCircles = (
+  div: HTMLDivElement
+): Observable<Circle> => {
   return makeObservableOfClickEventsOnDiv(div).pipe(
     pairwise(),
     map(makeCircleFromPairClicks)
   );
 };
 
-export const makeObservableOfTriangles = (div: HTMLDivElement) => {
+export const makeObservableOfTriangles = (
+  div: HTMLDivElement
+): Observable<MouseEvent> => {
   return makeObservableOfClickEventsOnDiv(div).pipe(
     pairwise(),
     pairwise(),
@@ -34,7 +40,7 @@ export const makeObservableOfTriangles = (div: HTMLDivElement) => {
   );
 };
 
-interface IState {
+interface State {
   circlesDrawn: number;
   clickCount: number;
   coordinates: Coords[];
@@ -42,7 +48,7 @@ interface IState {
   trianglesDrawn: number;
 }
 
-const initialState: IState = {
+const initialState: State = {
   circlesDrawn: 0,
   clickCount: 0,
   coordinates: [] as Coords[],
@@ -55,4 +61,4 @@ const initialState: IState = {
  *
  * @see http://reactivex.io/rxjs/manual/overview.html#behaviorsubject
  */
-export const boardSubject$ = new BehaviorSubject<IState>(initialState);
+export const boardSubject$ = new BehaviorSubject<State>(initialState);

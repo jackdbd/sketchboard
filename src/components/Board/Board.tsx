@@ -39,10 +39,10 @@ export const Board: React.FC<{}> = () => {
     switch (shape) {
       case ShapeOption.Circle: {
         const observable$ = makeObservableOfCircles(refDiv.current);
-        const observer = (circle: ICircle) => {
-          // side-effects on the board
-          renderCircleInSVG(refSvg.current!, circle);
-          // side-effects on the shared state
+        const observer = (circle: ICircle): void => {
+          if (refSvg.current) {
+            renderCircleInSVG(refSvg.current, circle);
+          }
           setSharedState({
             ...state,
             circlesDrawn: state.circlesDrawn + 1,
@@ -56,10 +56,10 @@ export const Board: React.FC<{}> = () => {
 
       case ShapeOption.Triangle: {
         const observable$ = makeObservableOfTriangles(refDiv.current);
-        const observer = (triangle: ITriangle) => {
-          // side-effect on the board
-          renderTriangleInSVG(refSvg.current!, triangle);
-          // side-effects on the shared state
+        const observer = (triangle: ITriangle): void => {
+          if (refSvg.current) {
+            renderTriangleInSVG(refSvg.current, triangle);
+          }
           setSharedState({
             ...state,
             clickCount: state.clickCount + 3,
@@ -77,14 +77,16 @@ export const Board: React.FC<{}> = () => {
         throw new Error(msg);
     }
 
-    return () => {
+    return (): void => {
       if (subscription) {
         subscription.unsubscribe();
       }
     };
   }, [refDiv, refSvg, shape, state]);
 
-  const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  const onClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ): void => {
     const [x, y] = coordinatesFromEvent(event);
     console.log('onClick', x, y);
   };

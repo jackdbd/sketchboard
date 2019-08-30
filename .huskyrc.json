@@ -1,0 +1,7 @@
+{
+  "hooks": {
+    "post-receive": "yarn deploy",
+    "pre-commit": "lint-staged",
+    "pre-push": "yarn test:unit"
+  }
+}
