@@ -73,6 +73,7 @@ export const Board: React.FC<{}> = () => {
 
       default:
         const msg = `TODO: ${shape} not yet implemented`;
+        // alert(msg);
         throw new Error(msg);
     }
 

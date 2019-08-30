@@ -1,15 +1,20 @@
+import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 
 import { App } from './App';
+import {
+  DIV_CONTAINER_TEST_ID as BOARD_DIV,
+  SVG_BOARD_TEST_ID as BOARD_SVG,
+} from '../Board';
+import { DIV_CONTAINER_TEST_ID as ERROR_DIV } from '../ErrorBoundary';
 import { SHAPE_SELECT_TEST_ID, ShapeOption } from '../Sidebar';
-import { DIV_CONTAINER_TEST_ID, SVG_BOARD_TEST_ID } from '../Board';
 
 describe('App', () => {
   it('renders one svg polygon in the board with three clicks (when the selected shape is "Triangle")', () => {
     const { getByTestId } = render(<App />);
-    const div = getByTestId(DIV_CONTAINER_TEST_ID);
-    const svg = getByTestId(SVG_BOARD_TEST_ID);
+    const div = getByTestId(BOARD_DIV);
+    const svg = getByTestId(BOARD_SVG);
 
     fireEvent.change(getByTestId(SHAPE_SELECT_TEST_ID), {
       target: { value: ShapeOption.Triangle },
@@ -22,13 +27,13 @@ describe('App', () => {
     expect(svg.firstChild!.nodeName).toBe('polygon');
   });
 
-  it('throws when the selected shape is "Bezier Curve" (not yet implemented)', () => {
+  it('throws when the selected shape is "Bezier Curve" (not yet implemented) but it is catched by an error boundary', () => {
     const { getByTestId } = render(<App />);
 
-    expect(() => {
-      fireEvent.change(getByTestId(SHAPE_SELECT_TEST_ID), {
-        target: { value: ShapeOption.BezierCurve },
-      });
-    }).toThrow();
+    fireEvent.change(getByTestId(SHAPE_SELECT_TEST_ID), {
+      target: { value: ShapeOption.BezierCurve },
+    });
+
+    expect(getByTestId(ERROR_DIV)).toBeInTheDocument();
   });
 });

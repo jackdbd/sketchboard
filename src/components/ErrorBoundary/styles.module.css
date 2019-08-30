@@ -1,0 +1,8 @@
+.error-boundary {
+  background: hotpink;
+}
+
+.error-boundary > details {
+  font-size: 3rem;
+  white-space: pre-wrap;
+}

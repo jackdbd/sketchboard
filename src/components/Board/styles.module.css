@@ -21,5 +21,5 @@
 .svg-board {
   fill: orange;
   stroke: rebeccapurple;
-  outline: 1rem dashed hotpink;
+  outline: 0.125rem dashed hotpink;
 }
