@@ -1,33 +1,27 @@
 import React, { useEffect, useRef } from 'react';
-import { map, pairwise, tap } from 'rxjs/operators';
 
 import { useSharedState } from '../../hooks';
 import {
-  BoardSubject,
+  boardSubject$,
   makeObservableOfCircles,
-  makeObservableOfClickEventsOnDiv,
+  makeObservableOfTriangles,
 } from './observables';
-import {
-  addCircleToBoard,
-  coordinatesFromEvent,
-  ICircle,
-  makeTriangleFromTriplet,
-  makeTripletOfClicks,
-} from './utils';
+import { renderCircleInSVG, renderTriangleInSVG } from './renderers';
+import { ICircle, ITriangle } from './shapes';
+import { coordinatesFromEvent } from './utils';
+import { shapePickerSubject$, ShapeOption } from '../Sidebar';
 
 import styles from './styles.module.css';
-import { Coords, TripletClicks } from './types';
+import { Subscription } from 'rxjs';
 
-export const TEST_ID_CONTAINER = 'board-container-test-id';
-export const TEST_ID_SVG = 'board-svg-test-id';
+export const DIV_CONTAINER_TEST_ID = 'board-container-test-id';
+export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
 
 const REF_NOT_READY = 'ASSERT: ref NOT ready!';
 
-export const Board: React.FC = () => {
-  const [
-    { clickCount, coordinates, lastClick },
-    setSharedState,
-  ] = useSharedState(BoardSubject);
+export const Board: React.FC<{}> = () => {
+  const [state, setSharedState] = useSharedState(boardSubject$);
+  const [{ shape }] = useSharedState(shapePickerSubject$);
 
   const refDiv = useRef<HTMLDivElement>(null);
   const refSvg = useRef<SVGSVGElement>(null);
@@ -37,108 +31,78 @@ export const Board: React.FC = () => {
       throw new Error(REF_NOT_READY);
     }
 
-    // TODO: make another useEffect?
     if (!refSvg.current) {
       throw new Error(REF_NOT_READY);
     }
 
-    const observableOfCircles = makeObservableOfCircles(refDiv.current);
+    let subscription: Subscription;
+    switch (shape) {
+      case ShapeOption.Circle: {
+        const observable$ = makeObservableOfCircles(refDiv.current);
+        const observer = (circle: ICircle) => {
+          // side-effects on the board
+          renderCircleInSVG(refSvg.current!, circle);
+          // side-effects on the shared state
+          setSharedState({
+            ...state,
+            circlesDrawn: state.circlesDrawn + 1,
+            clickCount: state.clickCount + 2,
+          });
+        };
 
-    const observerOfCircles = (c: ICircle) => {
-      if (!refSvg.current) {
-        throw new Error(REF_NOT_READY);
+        subscription = observable$.subscribe(observer);
+        break;
       }
-      const svg = refSvg.current;
-      addCircleToBoard(svg, c);
-      setSharedState({
-        clickCount: clickCount + 1,
-        coordinates,
-        lastClick: [c.cx, c.cy] as Coords,
-      });
-    };
 
-    const subscriptionOnCircles = observableOfCircles.subscribe(
-      observerOfCircles
-    );
+      case ShapeOption.Triangle: {
+        const observable$ = makeObservableOfTriangles(refDiv.current);
+        const observer = (triangle: ITriangle) => {
+          // side-effect on the board
+          renderTriangleInSVG(refSvg.current!, triangle);
+          // side-effects on the shared state
+          setSharedState({
+            ...state,
+            clickCount: state.clickCount + 3,
+            trianglesDrawn: state.trianglesDrawn + 1,
+          });
+        };
 
-    const observableOfClicks = makeObservableOfClickEventsOnDiv(refDiv.current);
+        subscription = observable$.subscribe(observer);
+        break;
+      }
 
-    // TODO: make this observable side-effects free and perform side effects in the observer?
-    const observableOfTripletClicks = observableOfClicks.pipe(
-      pairwise(),
-      pairwise(),
-      map(makeTripletOfClicks),
-      tap((triplet: TripletClicks) => {
-        setSharedState({
-          clickCount,
-          coordinates,
-          lastClick: [...coordinatesFromEvent(triplet[0])],
-        });
-      })
-    );
-    const subscriptionOnTriangles = observableOfTripletClicks.subscribe(
-      makeTriangleFromTriplet
-    );
+      default:
+        const msg = `TODO: ${shape} not yet implemented`;
+        throw new Error(msg);
+    }
 
     return () => {
-      subscriptionOnCircles.unsubscribe();
-      subscriptionOnTriangles.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
-  }, [refDiv, refSvg]);
+  }, [refDiv, refSvg, shape, state]);
 
   const onClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const [x, y] = coordinatesFromEvent(event);
-    setSharedState({
-      clickCount: clickCount + 1,
-      coordinates: [...coordinates, [x, y]] as Coords[],
-      lastClick: [x, y] as Coords,
-    });
-  };
-
-  const onMouseMove = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const [x, y] = coordinatesFromEvent(event);
-    const lc: Coords = coordinates.length
-      ? coordinates[coordinates.length - 1]
-      : [0, 0];
-    setSharedState({
-      clickCount,
-      coordinates: [...coordinates, [x, y]] as Coords[],
-      lastClick: lc,
-    });
+    console.log('onClick', x, y);
   };
 
   return (
     <div
       className={styles.board}
-      data-testid={TEST_ID_CONTAINER}
+      data-testid={DIV_CONTAINER_TEST_ID}
       onClick={onClick}
-      onMouseMove={onMouseMove}
       ref={refDiv}
     >
       <div className={styles.inner}>
         <svg
           className={styles['svg-board']}
-          data-testid={TEST_ID_SVG}
+          data-testid={SVG_BOARD_TEST_ID}
           height="100%"
           ref={refSvg}
           width="100%"
-        >
-          <circle
-            cx={lastClick[0]}
-            cy={lastClick[1]}
-            r="40"
-            stroke="black"
-            strokeWidth="3"
-            fill={'steelblue'}
-          />
-          <text
-            className={styles['circle-center']}
-            x={lastClick[0]}
-            y={lastClick[1]}
-          >
-            {`x: ${lastClick[0]}; y: ${lastClick[1]}`}
-          </text>
-        </svg>
+        />
       </div>
     </div>
   );

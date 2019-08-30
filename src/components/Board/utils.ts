@@ -1,10 +1,5 @@
+import { ICircle, ITriangle } from './shapes';
 import { Coords, PairClicks, TripletClicks } from './types';
-
-export interface ICircle {
-  cx: number;
-  cy: number;
-  r: number;
-}
 
 export const euclideanDistance = (p: Coords, q: Coords) => {
   const [x0, y0] = p;
@@ -20,26 +15,12 @@ export const makeCircleFromPairClicks = (pair: PairClicks): ICircle => {
   return { cx, cy, r };
 };
 
-export const makeTriangleFromTriplet = (triplet: TripletClicks) => {
+export const makeTriangleFromTriplet = (triplet: TripletClicks): ITriangle => {
   const [ev0, ev1, ev2] = triplet;
-  const a = { x: ev0.clientX, y: ev0.clientY };
-  const b = { x: ev1.clientX, y: ev1.clientY };
-  const c = { x: ev2.clientX, y: ev2.clientY };
-  return { a, b, c };
-};
-
-// TODO: use d3?
-export const addCircleToBoard = (svg: SVGSVGElement, c: ICircle) => {
-  const svgNS = svg.namespaceURI;
-  const circle = document.createElementNS(svgNS, 'circle');
-  circle.setAttribute('cx', `${c.cx}`);
-  circle.setAttribute('cy', `${c.cy}`);
-  circle.setAttribute('r', `${c.r}`);
-  circle.setAttribute('fill', 'red');
-  circle.setAttribute('stroke', 'black');
-  circle.setAttribute('stroke-width', '20px');
-  circle.setAttribute('stroke-opacity', '0.5');
-  svg.appendChild(circle);
+  const p0 = { x: ev0.clientX, y: ev0.clientY };
+  const p1 = { x: ev1.clientX, y: ev1.clientY };
+  const p2 = { x: ev2.clientX, y: ev2.clientY };
+  return { p0, p1, p2 };
 };
 
 export function coordinatesFromEvent(

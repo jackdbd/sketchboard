@@ -18,7 +18,8 @@ export const initialState: IState = {
 };
 
 /**
- * Observable that emits new values to all of its subscribers every time the
- * state of the React component where this observable is used changes.
+ * BehaviorSubject that represents this component's state over time.
+ *
+ * @see http://reactivex.io/rxjs/manual/overview.html#behaviorsubject
  */
 export const shapePickerSubject$ = new BehaviorSubject<IState>(initialState);

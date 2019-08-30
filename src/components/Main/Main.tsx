@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useSharedState } from '../../hooks';
-import { Board, BoardSubject } from '../Board';
+import { Board, boardSubject$ } from '../Board';
 import { EventsList } from '../EventsList';
 
 import styles from './styles.module.css';
@@ -23,8 +23,8 @@ import styles from './styles.module.css';
 //   map(makeTripletOfClicks)
 // );
 
-export const Main: React.FC = () => {
-  const [{ coordinates }] = useSharedState(BoardSubject);
+export const Main: React.FC<{}> = () => {
+  const [{ coordinates }] = useSharedState(boardSubject$);
   return (
     <div className={styles.main}>
       <Board />

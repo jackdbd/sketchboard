@@ -3,54 +3,59 @@ import clsx from 'clsx';
 import React from 'react';
 
 import { useSharedState } from '../../hooks';
-import { Option, ShapePickerSubject } from './observables';
+import { ShapeOption, shapePickerSubject$ } from './observables';
 import styles from './styles.module.css';
+
+export const DIV_CONTAINER_TEST_ID = 'sidebar-container-test-id';
+export const SHAPE_SELECT_TEST_ID = 'sidebar-select-test-id';
+const SHAPE_SELECT_ID = 'shape-select-id';
+const SHAPE_SELECT_NAME = 'shape-selector';
 
 interface IProps {
   label: string;
 }
 
-export const TEST_ID_CONTAINER = 'sidebar-container-test-id';
-export const TEST_ID_SELECT = 'sidebar-select-test-id';
-
 export const Sidebar: React.FC<IProps> = props => {
   const { label } = props;
 
-  const [state, setState] = useSharedState(ShapePickerSubject);
+  const [state, setSharedState] = useSharedState(shapePickerSubject$);
   const { dropdownChangesCount, shape } = state;
 
-  const onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setState({
+  const onShapeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSharedState({
       dropdownChangesCount: state.dropdownChangesCount + 1,
-      shape: event.target.value as Option,
+      shape: event.target.value as ShapeOption,
     });
   };
 
-  const className = clsx(styles.sidebar, 'stack');
-
   return (
-    <div className={className} data-testid={TEST_ID_CONTAINER}>
-      <div className="stack-small">
-        <label htmlFor="shape-select">{label}</label>
+    <div
+      className={clsx(styles.sidebar, 'stack')}
+      data-testid={DIV_CONTAINER_TEST_ID}
+    >
+      <div className={clsx('stack-small')}>
+        <label htmlFor={SHAPE_SELECT_ID}>{label}</label>
         <select
           className={styles.select}
-          id="shape-select"
-          data-testid={TEST_ID_SELECT}
-          name="shape-selector"
-          onChange={onChange}
+          id={SHAPE_SELECT_ID}
+          data-testid={SHAPE_SELECT_TEST_ID}
+          name={SHAPE_SELECT_NAME}
+          onChange={onShapeChange}
         >
-          <option value={Option.Circle}>Circle</option>
-          <option value={Option.Triangle}>Triangle</option>
-          <option value={Option.BezierCurve}>Bezier Curve</option>
+          <option value={ShapeOption.Circle}>Circle</option>
+          <option value={ShapeOption.Triangle}>Triangle</option>
+          <option value={ShapeOption.Rectangle}>Rectangle</option>
+          <option value={ShapeOption.BezierCurve}>Bezier Curve</option>
         </select>
       </div>
 
-      <div className="stack-large">
+      <div className={clsx('stack-large')}>
         <p>{`You selected ${shape}`}</p>
         <p>{`You changed shape ${dropdownChangesCount} times`}</p>
       </div>
+
       <div className="stack-small">
-        {'Some icons'}
+        <p>{'Some icons'}</p>
         <div style={{ outline: '0.2rem solid orange' }}>
           <Icon type="caret-up" />
           <Icon type="play-circle" />
@@ -75,6 +80,7 @@ export const Sidebar: React.FC<IProps> = props => {
           Search
         </Button>
       </div>
+
       <Button type="primary">
         <span>Button with icon</span>
         <Icon type="taobao" />
