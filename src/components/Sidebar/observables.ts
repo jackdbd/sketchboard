@@ -1,20 +1,24 @@
 import { BehaviorSubject } from 'rxjs';
 
-// Available options for the shape picker.
-export enum Option {
+export enum ShapeOption {
   BezierCurve = 'Bezier Curve',
   Circle = 'Circle',
+  Rectangle = 'Rectangle',
   Triangle = 'Triangle',
 }
 
-// Initial state of the Sidebar component.
-const initialState = {
+interface IState {
+  dropdownChangesCount: number;
+  shape: ShapeOption;
+}
+
+export const initialState: IState = {
   dropdownChangesCount: 0,
-  shape: Option.Circle,
+  shape: ShapeOption.Circle,
 };
 
 /**
  * Observable that emits new values to all of its subscribers every time the
- * state of the Sidebar changes. It starts with an initial state.
+ * state of the React component where this observable is used changes.
  */
-export const ShapePickerSubject = new BehaviorSubject(initialState);
+export const shapePickerSubject$ = new BehaviorSubject<IState>(initialState);

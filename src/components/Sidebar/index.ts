@@ -1,2 +1,2 @@
 export { Sidebar } from './Sidebar';
-export { Option as ShapePickerOption, ShapePickerSubject } from './observables';
+export { ShapeOption, shapePickerSubject$ } from './observables';
