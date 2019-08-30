@@ -8,7 +8,7 @@ import {
   makeTriangleFromTriplet,
   makeTripletOfClicks,
 } from './utils';
-import { Circle } from './shapes';
+import { Circle, Triangle } from './shapes';
 
 const makeObservableOfClickEventsOnTarget = (
   eventTarget: FromEventTarget<MouseEvent>
@@ -31,7 +31,7 @@ export const makeObservableOfCircles = (
 
 export const makeObservableOfTriangles = (
   div: HTMLDivElement
-): Observable<MouseEvent> => {
+): Observable<Triangle> => {
   return makeObservableOfClickEventsOnDiv(div).pipe(
     pairwise(),
     pairwise(),

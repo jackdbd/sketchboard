@@ -7,7 +7,7 @@ import {
   makeObservableOfTriangles,
 } from './observables';
 import { renderCircleInSVG, renderTriangleInSVG } from './renderers';
-import { ICircle, ITriangle } from './shapes';
+import { Circle, Triangle } from './shapes';
 import { coordinatesFromEvent } from './utils';
 import { shapePickerSubject$, ShapeOption } from '../Sidebar';
 
@@ -39,7 +39,7 @@ export const Board: React.FC<{}> = () => {
     switch (shape) {
       case ShapeOption.Circle: {
         const observable$ = makeObservableOfCircles(refDiv.current);
-        const observer = (circle: ICircle): void => {
+        const observer = (circle: Circle): void => {
           if (refSvg.current) {
             renderCircleInSVG(refSvg.current, circle);
           }
@@ -56,7 +56,7 @@ export const Board: React.FC<{}> = () => {
 
       case ShapeOption.Triangle: {
         const observable$ = makeObservableOfTriangles(refDiv.current);
-        const observer = (triangle: ITriangle): void => {
+        const observer = (triangle: Triangle): void => {
           if (refSvg.current) {
             renderTriangleInSVG(refSvg.current, triangle);
           }
