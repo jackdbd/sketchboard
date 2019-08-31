@@ -475,10 +475,9 @@ module.exports = function(webpackEnv) {
         }),
       isEnvProduction &&
         new PacktrackerPlugin({
-          branch: process.env.TRAVIS_BRANCH, // https://docs.packtracker.io/faq#why-cant-the-plugin-determine-my-branch-name
           fail_build: true,
           project_token: 'd001b3f5-4d3e-40e6-89c1-2cc4b465716b',
-          upload: process.env.CI === 'true', // upload stats.json only in CI
+          upload: true,
         }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
