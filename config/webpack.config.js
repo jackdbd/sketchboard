@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 'use strict';
 
 const fs = require('fs');
@@ -24,6 +27,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt')
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
+const PacktrackerPlugin = require('@packtracker/webpack-plugin');
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -468,6 +472,13 @@ module.exports = function(webpackEnv) {
         new BundleAnalyzerPlugin({
           analyzerMode: 'disabled',
           generateStatsFile: true,
+        }),
+      isEnvProduction &&
+        new PacktrackerPlugin({
+          branch: process.env.TRAVIS_BRANCH, // https://docs.packtracker.io/faq#why-cant-the-plugin-determine-my-branch-name
+          fail_build: true,
+          project_token: 'd001b3f5-4d3e-40e6-89c1-2cc4b465716b',
+          upload: process.env.CI === 'true', // upload stats.json only in CI
         }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
