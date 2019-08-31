@@ -1,8 +1,8 @@
-.error-boundary {
+.fallback-ui {
   background: forestgreen;
 }
 
-.error-boundary > details {
+.fallback-ui > details {
   font-size: 3rem;
   white-space: pre-wrap;
 }

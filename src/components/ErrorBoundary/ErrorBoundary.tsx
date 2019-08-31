@@ -1,6 +1,7 @@
+import * as Sentry from '@sentry/browser';
 import React, { ErrorInfo } from 'react';
 
-import styles from './styles.module.css';
+import { FallbackUI } from './FallbackUI';
 
 interface Props {
   debug?: boolean;
@@ -9,43 +10,44 @@ interface Props {
 interface State {
   error?: Error;
   errorInfo?: ErrorInfo;
+  eventId?: string;
 }
-
-export const DIV_CONTAINER_TEST_ID = 'error-boundary-div-container-test-id';
 
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { error: undefined, errorInfo: undefined };
+    this.state = { error: undefined, errorInfo: undefined, eventId: undefined };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    this.setState({
-      error,
-      errorInfo,
+    Sentry.withScope(scope => {
+      scope.setExtras(errorInfo);
+      const eventId = Sentry.captureException(error);
+      this.setState({ error, errorInfo, eventId });
     });
   }
 
   public render(): JSX.Element {
     const { children, debug } = this.props;
-    const { error, errorInfo } = this.state;
+    const { error, errorInfo, eventId } = this.state;
+
     if (error && debug) {
       console.error('--- ERROR ---', error);
     }
+
     return error ? (
-      <div
-        className={styles['error-boundary']}
-        data-testid={DIV_CONTAINER_TEST_ID}
-      >
-        <h1>Something went wrong.</h1>
-        <details>
-          {error && error.toString()}
-          <br />
-          {errorInfo && errorInfo.componentStack}
-        </details>
-      </div>
+      <FallbackUI
+        error={error}
+        errorInfo={errorInfo}
+        eventId={eventId}
+        onReportCrashButtonClick={this.onReportCrash}
+      />
     ) : (
       <React.Fragment>{children}</React.Fragment>
     );
   }
+
+  private onReportCrash = (): void => {
+    Sentry.showReportDialog({ eventId: this.state.eventId });
+  };
 }

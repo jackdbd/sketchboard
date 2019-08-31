@@ -24,7 +24,10 @@ describe('App', () => {
     fireEvent.click(div, { clientX: 50, clientY: 10 });
     fireEvent.click(div, { clientX: 30, clientY: 30 });
 
-    expect(svg.firstChild!.nodeName).toBe('polygon');
+    expect(svg.firstChild).not.toBeNull();
+    if (svg.firstChild) {
+      expect(svg.firstChild.nodeName).toBe('polygon');
+    }
   });
 
   it('throws when the selected shape is "Bezier Curve" (not yet implemented) but it is catched by an error boundary', () => {
