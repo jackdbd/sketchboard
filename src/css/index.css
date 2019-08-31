@@ -3,6 +3,5 @@
 @import 'layouts.css';
 
 * {
-  /* background: var(--color-background); */
   box-sizing: border-box;
 }

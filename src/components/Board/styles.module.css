@@ -1,11 +1,7 @@
-/* TODO: remove margins and paddings. They are just used to debug x/y coordinates in click/mouseover events */
 .board {
   background: rgb(16, 172, 99);
-  /* flex-grow: 1; */
   height: 100%;
-  /* margin-left: 2rem; */
-  outline: 0.2rem solid red;
-  /* padding-left: 1rem; */
+  outline: 0.125rem solid red;
 }
 
 .circle-center {
