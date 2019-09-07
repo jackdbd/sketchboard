@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 'use strict';
 
 // This is a custom Jest transformer turning style imports into empty objects.
