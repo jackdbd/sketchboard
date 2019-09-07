@@ -1,0 +1,44 @@
+/*
+  The class to give the component to establish a Sidebar layout.
+  https://absolutely.every-layout.dev/layouts/sidebar/
+*/
+.with-sidebar-on-the-left,
+.with-sidebar-on-the-right {
+  /* The space between the sidebar element and the non-sidebar element */
+  --gutter: var(--s1);
+  /* Suppress scrolling sometimes caused by the overflow */
+  overflow: hidden;
+}
+
+.with-sidebar-on-the-left > *,
+.with-sidebar-on-the-right > * {
+  display: flex;
+  /* If there isn't enough space, don't overflow, wrap on next row instead */
+  flex-wrap: wrap;
+  /* Negative margin hack for the element that wraps both the sidebar and the
+  non-sidebar element */
+  margin: calc(var(--gutter) / 2 * -1);
+}
+
+.not-stretched-wrapper {
+  align-items: flex-start;
+}
+
+.with-sidebar-on-the-left > * > *,
+.with-sidebar-on-the-right > * > * {
+  flex-basis: 20rem;
+  /* Allow growing (needed for the vertical configuration) */
+  flex-grow: 1;
+  margin: calc(var(--gutter) / 2);
+}
+
+/* Selector for the non-sidebar element */
+.with-sidebar-on-the-left > * > :last-child,
+.with-sidebar-on-the-right > * > :first-child {
+  /* Grow from nothing */
+  flex-basis: 0;
+  /* Ensure all the available space is taken */
+  flex-grow: 999;
+  /* The value at which the layout changes between horizontal and vertical */
+  min-width: calc(60% - var(--gutter));
+}

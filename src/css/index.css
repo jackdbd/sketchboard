@@ -1,7 +1,9 @@
-@import '~antd/dist/antd.css';
+/* @import '~antd/dist/antd.css'; */
 @import 'variables.css';
-@import 'layouts.css';
 
-* {
-  box-sizing: border-box;
-}
+@import 'defaults.css';
+
+@import 'sidebar.css';
+@import 'stack.css';
+
+@import 'utility-classes.css';

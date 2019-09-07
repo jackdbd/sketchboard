@@ -2,6 +2,6 @@
   "extends": ["stylelint-config-recommended"],
   "rules": {
     "declaration-no-important": true,
-    "unit-whitelist": ["%", "em", "fr", "rem", "vh", "vw"]
+    "unit-whitelist": ["%", "ch", "em", "fr", "rem", "vh", "vw"]
   }
 }
