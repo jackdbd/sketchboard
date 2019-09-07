@@ -82,7 +82,7 @@ export const Board: React.FC<{}> = () => {
         subscription.unsubscribe();
       }
     };
-  }, [refDiv, refSvg, shape, state]);
+  }, [setSharedState, shape, state]);
 
   const onClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -98,15 +98,14 @@ export const Board: React.FC<{}> = () => {
       onClick={onClick}
       ref={refDiv}
     >
-      <div className={styles.inner}>
-        <svg
-          className={styles['svg-board']}
-          data-testid={SVG_BOARD_TEST_ID}
-          height="100%"
-          ref={refSvg}
-          width="100%"
-        />
-      </div>
+      <svg
+        className={styles['svg-board']}
+        data-testid={SVG_BOARD_TEST_ID}
+        height="100%"
+        ref={refSvg}
+        preserveAspectRatio={'xMinYMin meet'}
+        width="100%"
+      />
     </div>
   );
 };

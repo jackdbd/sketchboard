@@ -1,21 +1,9 @@
 .board {
-  background: rgb(16, 172, 99);
-  height: 100%;
-  outline: 0.125rem solid red;
-}
-
-.circle-center {
-  fill: orange;
-}
-
-.inner {
-  background: coral;
-  height: 100%;
-  outline: 0.2rem solid green;
+  background: slategray;
+  min-height: 100vh;
+  position: relative;
 }
 
 .svg-board {
-  fill: orange;
-  stroke: rebeccapurple;
   outline: 0.125rem dashed hotpink;
 }
