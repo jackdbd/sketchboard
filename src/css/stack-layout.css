@@ -29,12 +29,12 @@
 
 .stack-large > * + * {
   --color: hsl(var(--h), calc(var(--s) + 25%), var(--l));
-  background: var(--color);
+  /* background: var(--color); */
   margin-top: calc(var(--space) * 2);
 }
 
 .stack-small > * + * {
   --color: hsl(var(--h), calc(var(--s) - 25%), var(--l));
-  background: var(--color);
+  /* background: var(--color); */
   margin-top: calc(var(--space) * 0.5);
 }

@@ -1,0 +1,9 @@
+.box {
+  background-color: var(--color-background);
+  color: var(--color-font);
+  padding: var(--s1);
+}
+
+.box * {
+  color: inherit;
+}

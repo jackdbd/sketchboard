@@ -22,4 +22,7 @@
   --font-size-big: 2.25rem;
 
   --typography-line-height: 1rem;
+
+  --color-background: #d9d9d9;
+  --color-font: hsl(0, 10%, 10%);
 }

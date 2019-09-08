@@ -1,9 +1,5 @@
 .board {
-  background: slategray;
+  background: var(--color-background);
   min-height: 100vh;
   position: relative;
-}
-
-.svg-board {
-  outline: 0.125rem dashed hotpink;
 }

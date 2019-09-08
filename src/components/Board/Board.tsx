@@ -73,7 +73,6 @@ export const Board: React.FC<{}> = () => {
 
       default:
         const msg = `TODO: ${shape} not yet implemented`;
-        // alert(msg);
         throw new Error(msg);
     }
 
@@ -99,11 +98,10 @@ export const Board: React.FC<{}> = () => {
       ref={refDiv}
     >
       <svg
-        className={styles['svg-board']}
         data-testid={SVG_BOARD_TEST_ID}
         height="100%"
-        ref={refSvg}
         preserveAspectRatio={'xMinYMin meet'}
+        ref={refSvg}
         width="100%"
       />
     </div>

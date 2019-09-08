@@ -2,6 +2,7 @@
 
 @import 'defaults.css';
 
+@import 'box-layout.css';
 @import 'sidebar-layout.css';
 @import 'stack-layout.css';
 
