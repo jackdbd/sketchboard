@@ -11,10 +11,9 @@ import {
 describe('Sidebar', () => {
   const label = 'Hello World';
 
-  it('has a div container with the expected CSS classes', () => {
+  it('has a div container with the `stack` CSS class', () => {
     const { getByTestId } = render(<Sidebar label={label} />);
     const cssClasses = getByTestId(DIV_CONTAINER_TEST_ID).classList;
-    expect(cssClasses).toContain('sidebar');
     expect(cssClasses).toContain('stack');
   });
 
