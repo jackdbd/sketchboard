@@ -9,6 +9,7 @@ const setStyleAttributes = <T extends SVGElement>(
   config: ShapeStyleConfigState = initialShapeStyleConfigState
 ): T => {
   el.setAttribute('fill', config.fill || '');
+  el.setAttribute('opacity', config.opacity || '');
   el.setAttribute('stroke', config.stroke || '');
   el.setAttribute('stroke-dasharray', config['stroke-dasharray'] || '');
   el.setAttribute('stroke-opacity', config['stroke-opacity'] || '');

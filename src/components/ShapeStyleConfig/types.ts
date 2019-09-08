@@ -6,6 +6,7 @@ export enum DashArray {
 
 export interface ShapeStyleConfigState {
   fill?: string;
+  opacity?: string;
   stroke?: string;
   'stroke-opacity'?: string;
   'stroke-dasharray'?: DashArray;

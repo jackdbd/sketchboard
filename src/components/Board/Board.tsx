@@ -9,7 +9,7 @@ import {
 import { renderCircleInSVG, renderTriangleInSVG } from './renderers';
 import { Circle, Triangle } from './shapes';
 import { coordinatesFromEvent } from './utils';
-import { shapePickerSubject$, ShapeOption } from '../Sidebar';
+import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
 
 import styles from './styles.module.css';
 import { Subscription } from 'rxjs';

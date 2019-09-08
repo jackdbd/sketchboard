@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { useSharedState } from '../../hooks';
-import { shapePickerSubject$ } from '../Sidebar';
 import { boardSubject$ } from '../Board';
+import { shapePickerSubject$ } from '../ShapeSelect';
 
 export const InteractionsLogger: React.FC<{}> = () => {
   const [{ circlesDrawn, clickCount, trianglesDrawn }] = useSharedState(

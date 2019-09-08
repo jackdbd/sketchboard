@@ -8,7 +8,7 @@ import {
   SVG_BOARD_TEST_ID as BOARD_SVG,
 } from '../Board';
 import { DIV_CONTAINER_TEST_ID as ERROR_DIV } from '../ErrorBoundary';
-import { SHAPE_SELECT_TEST_ID, ShapeOption } from '../Sidebar';
+import { SHAPE_SELECT_TEST_ID, ShapeOption } from '../ShapeSelect';
 
 describe('App', () => {
   it('renders one svg polygon in the board with three clicks (when the selected shape is "Triangle")', () => {

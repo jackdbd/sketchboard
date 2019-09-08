@@ -8,7 +8,7 @@ export const App: React.FC<{}> = () => {
   return (
     <SidebarLayout side={'right'}>
       <Main />
-      <Sidebar label={'some label'} />
+      <Sidebar />
     </SidebarLayout>
   );
 };
