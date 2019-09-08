@@ -1,6 +1,7 @@
 import { Button, Icon, Slider, Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { saveSvgAsPng } from 'save-svg-as-png';
 
 import { useSharedState } from '../../hooks';
 import { ShapeOption, shapePickerSubject$ } from './observables';
@@ -14,6 +15,17 @@ const SHAPE_SELECT_NAME = 'shape-selector';
 interface Props {
   label: string;
 }
+
+const onClick = (): void => {
+  const svg = document.querySelector('svg');
+  if (svg) {
+    // const rawString = svg.parentElement.innerHTML;
+    // const base64EncodedString = window.btoa(rawString);
+    saveSvgAsPng(svg, 'drawing.png', {
+      scale: 0.5,
+    });
+  }
+};
 
 export const Sidebar: React.FC<Props> = props => {
   const { label } = props;
@@ -71,18 +83,10 @@ export const Sidebar: React.FC<Props> = props => {
           {'Enabled:'}
           <Switch size="small" checked={true} style={{ width: '50%' }} />
         </div>
-        <Button type="primary" shape="circle" icon="search" />
-        <Button type="primary">
-          <span>Button with icon</span>
-          <Icon type="taobao" />
-        </Button>
-        <Button type="dashed" icon="search">
-          Search
-        </Button>
       </div>
 
-      <Button type="primary">
-        <span>Button with icon</span>
+      <Button onClick={onClick} type="primary">
+        <span>Save SVG</span>
         <Icon type="taobao" />
       </Button>
     </div>
