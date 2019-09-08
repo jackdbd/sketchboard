@@ -1,19 +1,28 @@
 import React, { useEffect, useRef } from 'react';
+import { Subscription } from 'rxjs';
 
 import { useSharedState } from '../../hooks';
 import {
   boardSubject$,
   makeObservableOfCircles,
   makeObservableOfTriangles,
+  makeObservableOfMouseMoveEventsOnDiv,
+  makeObservableOfClickEventsOnDiv,
 } from './observables';
-import { renderCircleInSVG, renderTriangleInSVG } from './renderers';
+import {
+  renderCircleInSVG,
+  renderCircleFeedbackInSVG,
+  renderTriangleInSVG,
+  cleanupCircleFeedbackInSVG,
+} from './renderers';
 import { Circle, Triangle } from './shapes';
-import { coordinatesFromEvent } from './utils';
+import { coordinatesFromEvent, euclideanDistance } from './utils';
 import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
 
-import styles from './styles.module.css';
-import { Subscription } from 'rxjs';
 import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
+
+import styles from './styles.module.css';
+import { DashArray } from '../ShapeStyleConfig/types';
 
 export const DIV_CONTAINER_TEST_ID = 'board-container-test-id';
 export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
@@ -29,6 +38,7 @@ export const Board: React.FC<{}> = () => {
   const refSvg = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
+    let circleCenter: { x: number; y: number } | undefined = undefined;
     if (!refDiv.current) {
       throw new Error(REF_NOT_READY);
     }
@@ -37,22 +47,54 @@ export const Board: React.FC<{}> = () => {
       throw new Error(REF_NOT_READY);
     }
 
+    const obs$ = makeObservableOfClickEventsOnDiv(refDiv.current);
+    const obs = (event: MouseEvent): void => {
+      const [x, y] = coordinatesFromEvent(event);
+      circleCenter = shape === ShapeOption.Circle ? { x, y } : undefined;
+    };
+    const sub = obs$.subscribe(obs);
+
     let subscription: Subscription;
+    let subFeedback: Subscription;
     switch (shape) {
       case ShapeOption.Circle: {
+        const obsFeedback$ = makeObservableOfMouseMoveEventsOnDiv(
+          refDiv.current
+        );
+        const observerFeedback = (event: MouseEvent): void => {
+          if (refSvg.current && circleCenter) {
+            const { x, y } = circleCenter;
+            const [x1, y1] = coordinatesFromEvent(event);
+            const r = euclideanDistance([x, y], [x1, y1]);
+            const feedbackCircle = {
+              cx: x,
+              cy: y,
+              r,
+            };
+            renderCircleFeedbackInSVG(refSvg.current, feedbackCircle, {
+              fill: 'none',
+              opacity: '0.5',
+              stroke: 'blue',
+              'stroke-dasharray': DashArray.One,
+            });
+          }
+        };
         const observable$ = makeObservableOfCircles(refDiv.current);
         const observer = (circle: Circle): void => {
           if (refSvg.current) {
             renderCircleInSVG(refSvg.current, circle, shapeStyleConfig);
+            cleanupCircleFeedbackInSVG(refSvg.current);
           }
           setSharedState({
             ...state,
             circlesDrawn: state.circlesDrawn + 1,
             clickCount: state.clickCount + 2,
+            lastClick: [circle.cx, circle.cy],
           });
         };
 
         subscription = observable$.subscribe(observer);
+        subFeedback = obsFeedback$.subscribe(observerFeedback);
         break;
       }
 
@@ -82,21 +124,17 @@ export const Board: React.FC<{}> = () => {
       if (subscription) {
         subscription.unsubscribe();
       }
+      if (subFeedback) {
+        subFeedback.unsubscribe();
+      }
+      sub.unsubscribe();
     };
   }, [setSharedState, shape, shapeStyleConfig, state]);
-
-  const onClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ): void => {
-    const [x, y] = coordinatesFromEvent(event);
-    console.log('onClick', x, y);
-  };
 
   return (
     <div
       className={styles.board}
       data-testid={DIV_CONTAINER_TEST_ID}
-      onClick={onClick}
       ref={refDiv}
     >
       <svg

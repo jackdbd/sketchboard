@@ -16,6 +16,16 @@ const makeObservableOfClickEventsOnTarget = (
   return fromEvent(eventTarget, 'click');
 };
 
+const makeObservableOfMouseMoveEventsOnTarget = (
+  eventTarget: FromEventTarget<MouseEvent>
+): Observable<MouseEvent> => {
+  return fromEvent(eventTarget, 'mousemove');
+};
+
+export const makeObservableOfMouseMoveEventsOnDiv = (
+  div: HTMLDivElement
+): Observable<MouseEvent> => makeObservableOfMouseMoveEventsOnTarget(div);
+
 export const makeObservableOfClickEventsOnDiv = (
   div: HTMLDivElement
 ): Observable<MouseEvent> => makeObservableOfClickEventsOnTarget(div);

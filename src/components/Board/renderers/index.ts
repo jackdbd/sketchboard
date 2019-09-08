@@ -4,6 +4,8 @@ import { initialState as initialShapeStyleConfigState } from '../../ShapeStyleCo
 
 const NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
+const CIRCLE_FEEDBACK_ID = 'circle-feedback';
+
 const setStyleAttributes = <T extends SVGElement>(
   el: T,
   config: ShapeStyleConfigState = initialShapeStyleConfigState
@@ -19,22 +21,59 @@ const setStyleAttributes = <T extends SVGElement>(
 
 const makeSVGCircle = (
   c: Circle,
-  config?: ShapeStyleConfigState
+  config?: ShapeStyleConfigState,
+  id?: string
 ): SVGCircleElement => {
   let circle = document.createElementNS(NAMESPACE_URI, 'circle');
   circle.setAttribute('cx', `${c.cx}`);
   circle.setAttribute('cy', `${c.cy}`);
   circle.setAttribute('r', `${c.r}`);
   circle = setStyleAttributes(circle, config);
+  if (id) {
+    circle.setAttribute('id', id);
+  }
   return circle;
+};
+
+export const cleanupCircleFeedbackInSVG = (svg: SVGSVGElement): void => {
+  const el = document.querySelector(`#${CIRCLE_FEEDBACK_ID}`);
+  if (el) {
+    svg.removeChild(el);
+  }
 };
 
 export const renderCircleInSVG = (
   svg: SVGSVGElement,
   circle: Circle,
+  config?: ShapeStyleConfigState,
+  id?: string
+): void => {
+  svg.appendChild(makeSVGCircle(circle, config, id));
+};
+
+const updateCircleInSVG = (
+  el: SVGCircleElement,
+  c: Circle,
   config?: ShapeStyleConfigState
 ): void => {
-  svg.appendChild(makeSVGCircle(circle, config));
+  el.setAttribute('cx', `${c.cx}`);
+  el.setAttribute('cy', `${c.cy}`);
+  el.setAttribute('r', `${c.r}`);
+  el = setStyleAttributes(el, config);
+};
+
+// TODO: render a dashed line connecting the center and the current mousemove event coordinates
+export const renderCircleFeedbackInSVG = (
+  svg: SVGSVGElement,
+  circle: Circle,
+  config?: ShapeStyleConfigState
+): void => {
+  const el = document.querySelector(`#${CIRCLE_FEEDBACK_ID}`);
+  if (el) {
+    updateCircleInSVG(el as SVGCircleElement, circle, config);
+  } else {
+    renderCircleInSVG(svg, circle, config, CIRCLE_FEEDBACK_ID);
+  }
 };
 
 const makeSVGTriangle = (
