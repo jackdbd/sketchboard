@@ -24,6 +24,10 @@
   align-items: flex-start;
 }
 
+.stretched-wrapper {
+  align-items: stretch;
+}
+
 .with-sidebar-on-the-left > * > *,
 .with-sidebar-on-the-right > * > * {
   flex-basis: 20rem;

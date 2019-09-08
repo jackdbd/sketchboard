@@ -28,8 +28,15 @@ export const SidebarLayout: React.FC<Props> = props => {
   }, [children, side]);
 
   return (
-    <div className={clsx(`with-sidebar-on-the-${side}`)}>
-      <div className={clsx(noStretch && 'not-stretched-wrapper')}>
+    <div
+      className={clsx(`with-sidebar-on-the-${side}`)}
+      style={{ height: '100%', flexGrow: 1 }}
+    >
+      <div
+        className={clsx(
+          noStretch ? 'not-stretched-wrapper' : 'stretched-wrapper'
+        )}
+      >
         {children}
       </div>
     </div>

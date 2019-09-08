@@ -3,7 +3,7 @@
 
 @import 'defaults.css';
 
-@import 'sidebar.css';
-@import 'stack.css';
+@import 'sidebar-layout.css';
+@import 'stack-layout.css';
 
 @import 'utility-classes.css';

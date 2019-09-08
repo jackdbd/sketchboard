@@ -1,9 +1,10 @@
 :root {
-  --ratio: 1.5;
   /*
-    Modular scale
+    Modular scale. We divide or multiply by a ratio to create the points on the
+    modular scale.
     https://every-layout.dev/rudiments/modular-scale/
   */
+  --ratio: 1.5;
   --s-5: calc(var(--s-4) / var(--ratio));
   --s-4: calc(var(--s-3) / var(--ratio));
   --s-3: calc(var(--s-2) / var(--ratio));
@@ -16,7 +17,9 @@
   --s4: calc(var(--s3) * var(--ratio));
   --s5: calc(var(--s4) * var(--ratio));
 
-  /* stylelint-disable-next-line unit-whitelist */
-  --typography-font-size: 16px;
+  --font-size-base: 1rem;
+  --font-size-biggish: 1.75rem;
+  --font-size-big: 2.25rem;
+
   --typography-line-height: 1rem;
 }

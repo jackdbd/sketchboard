@@ -1,7 +1,29 @@
+/* 
+  CSS Utility classes
+
+  Utility classes can be used in many different HTML elements to override very
+  specific properties of their style. Utility classese are for final adjustments
+  and should not be overridden by anything that comes before them. To stress
+  this fact we use the !important keyword (which should not be used in any other
+  CSS file).
+  Utility classes have the highest specificity and explicitness, and the lowest
+  reach.
+  See Harry Roberts' inverted triangle:
+  https://www.creativebloq.com/web-design/manage-large-css-projects-itcss-101517528
+*/
+
 /* stylelint-disable declaration-no-important */
 
+.font-size\:base {
+  font-size: var(--font-size-base) !important;
+}
+
 .font-size\:biggish {
-  font-size: 1.75rem;
+  font-size: var(--font-size-biggish) !important;
+}
+
+.font-size\:big {
+  font-size: var(--font-size-big) !important;
 }
 
 /* stylelint-enable declaration-no-important */
