@@ -63,6 +63,10 @@ process.env.NODE_PATH = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in Webpack configuration.
 const REACT_APP = /^REACT_APP_/i;
 
+function getAppName(appPackageJson) {
+  return require(appPackageJson).name;
+}
+
 function getClientEnvironment(publicUrl) {
   const defaultEnvVariables = {
     // Useful for determining whether we’re running in production mode.
@@ -84,8 +88,9 @@ function getClientEnvironment(publicUrl) {
     .filter(key => REACT_APP.test(key))
     .reduce(reduceFn, defaultEnvVariables);
 
-  // Stringify all values so we can feed into Webpack DefinePlugin
+  // Stringify all values so we can inject them in the bundle with Webpack DefinePlugin
   const stringified = {
+    APP_NAME: JSON.stringify(getAppName(paths.resolveApp('package.json'))),
     'process.env': Object.keys(raw).reduce((env, key) => {
       env[key] = JSON.stringify(raw[key]);
       return env;

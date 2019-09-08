@@ -87,3 +87,5 @@ module.exports = {
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;
+
+module.exports.resolveApp = resolveApp;
