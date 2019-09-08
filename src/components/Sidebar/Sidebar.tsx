@@ -1,5 +1,6 @@
 import { Button, Icon, Slider, Switch } from 'antd';
 import clsx from 'clsx';
+import { saveAs } from 'file-saver';
 import React from 'react';
 import { saveSvgAsPng } from 'save-svg-as-png';
 
@@ -16,14 +17,23 @@ interface Props {
   label: string;
 }
 
-const onClick = (): void => {
+const saveAsPNG = (): void => {
   const svg = document.querySelector('svg');
   if (svg) {
-    // const rawString = svg.parentElement.innerHTML;
-    // const base64EncodedString = window.btoa(rawString);
     saveSvgAsPng(svg, 'drawing.png', {
       scale: 0.5,
     });
+  }
+};
+
+const saveAsSVG = (): void => {
+  const svg = document.querySelector('svg');
+  if (svg) {
+    const serializer = new XMLSerializer();
+    const svgBlob = new Blob([serializer.serializeToString(svg)], {
+      type: 'image/svg+xml',
+    });
+    saveAs(svgBlob, 'disegno.svg');
   }
 };
 
@@ -85,8 +95,12 @@ export const Sidebar: React.FC<Props> = props => {
         </div>
       </div>
 
-      <Button onClick={onClick} type="primary">
-        <span>Save SVG</span>
+      <Button onClick={saveAsSVG} type="primary">
+        <span>Save as SVG</span>
+        <Icon type="taobao" />
+      </Button>
+      <Button onClick={saveAsPNG} type="primary">
+        <span>Save as PNG</span>
         <Icon type="taobao" />
       </Button>
     </div>
