@@ -3,6 +3,8 @@ import React from 'react';
 
 import { useSharedState } from '../../hooks';
 import { Exports } from '../Exports';
+import { InteractionsLogger } from '../InteractionsLogger';
+import { ShapeStyleConfig } from '../ShapeStyleConfig';
 import { ShapeOption, shapePickerSubject$ } from './observables';
 
 export const DIV_CONTAINER_TEST_ID = 'sidebar-container-test-id';
@@ -48,7 +50,9 @@ export const Sidebar: React.FC<Props> = props => {
         <p>{`You selected ${shape}`}</p>
         <p>{`You changed shape ${dropdownChangesCount} times`}</p>
       </div>
+      <ShapeStyleConfig />
       <Exports />
+      <InteractionsLogger />
     </div>
   );
 };

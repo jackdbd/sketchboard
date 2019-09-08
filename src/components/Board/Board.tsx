@@ -13,6 +13,7 @@ import { shapePickerSubject$, ShapeOption } from '../Sidebar';
 
 import styles from './styles.module.css';
 import { Subscription } from 'rxjs';
+import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
 
 export const DIV_CONTAINER_TEST_ID = 'board-container-test-id';
 export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
@@ -22,6 +23,7 @@ const REF_NOT_READY = 'ASSERT: ref NOT ready!';
 export const Board: React.FC<{}> = () => {
   const [state, setSharedState] = useSharedState(boardSubject$);
   const [{ shape }] = useSharedState(shapePickerSubject$);
+  const [shapeStyleConfig] = useSharedState(shapeStyleConfigSubject$);
 
   const refDiv = useRef<HTMLDivElement>(null);
   const refSvg = useRef<SVGSVGElement>(null);
@@ -41,7 +43,7 @@ export const Board: React.FC<{}> = () => {
         const observable$ = makeObservableOfCircles(refDiv.current);
         const observer = (circle: Circle): void => {
           if (refSvg.current) {
-            renderCircleInSVG(refSvg.current, circle);
+            renderCircleInSVG(refSvg.current, circle, shapeStyleConfig);
           }
           setSharedState({
             ...state,
@@ -58,7 +60,7 @@ export const Board: React.FC<{}> = () => {
         const observable$ = makeObservableOfTriangles(refDiv.current);
         const observer = (triangle: Triangle): void => {
           if (refSvg.current) {
-            renderTriangleInSVG(refSvg.current, triangle);
+            renderTriangleInSVG(refSvg.current, triangle, shapeStyleConfig);
           }
           setSharedState({
             ...state,
@@ -81,7 +83,7 @@ export const Board: React.FC<{}> = () => {
         subscription.unsubscribe();
       }
     };
-  }, [setSharedState, shape, state]);
+  }, [setSharedState, shape, shapeStyleConfig, state]);
 
   const onClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>

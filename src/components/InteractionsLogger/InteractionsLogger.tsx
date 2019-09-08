@@ -11,7 +11,7 @@ export const InteractionsLogger: React.FC<{}> = () => {
   const [{ shape }] = useSharedState(shapePickerSubject$);
 
   return (
-    <div style={{ outline: '0.2rem solid orange' }}>
+    <div className="stack">
       <p>{`Selected shape: ${shape}`}</p>
       <p>{`Click count: ${clickCount}`}</p>
       <p>{`Circles drawn: ${circlesDrawn}`}</p>
