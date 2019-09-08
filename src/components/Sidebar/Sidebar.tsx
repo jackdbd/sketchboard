@@ -1,4 +1,3 @@
-import { Button, Icon, Slider, Switch } from 'antd';
 import clsx from 'clsx';
 import { saveAs } from 'file-saver';
 import React from 'react';
@@ -76,33 +75,12 @@ export const Sidebar: React.FC<Props> = props => {
         <p>{`You changed shape ${dropdownChangesCount} times`}</p>
       </div>
 
-      <div className="stack-small">
-        <p>{'Some icons'}</p>
-        <div style={{ outline: '0.2rem solid orange' }}>
-          <Icon type="caret-up" />
-          <Icon type="play-circle" />
-          <Icon type="radar-chart" />
-          <Icon type="heat-map" />
-        </div>
-        {'Some sliders and switches'}
-        <div style={{ outline: '0.2rem solid orange' }}>
-          <Slider defaultValue={30} disabled={true} />
-          <Slider range defaultValue={[20, 50]} disabled={false} />
-          {'Disabled:'}
-          <Switch size="small" checked={false} style={{ width: '33%' }} />
-          {'Enabled:'}
-          <Switch size="small" checked={true} style={{ width: '50%' }} />
-        </div>
-      </div>
-
-      <Button onClick={saveAsSVG} type="primary">
-        <span>Save as SVG</span>
-        <Icon type="taobao" />
-      </Button>
-      <Button onClick={saveAsPNG} type="primary">
-        <span>Save as PNG</span>
-        <Icon type="taobao" />
-      </Button>
+      <button onClick={saveAsSVG} type="button">
+        Save as SVG
+      </button>
+      <button onClick={saveAsPNG} type="button">
+        Save as PNG
+      </button>
     </div>
   );
 };
