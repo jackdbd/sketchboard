@@ -84,6 +84,7 @@
     "fork-ts-checker-webpack-plugin-alt": "0.4.14",
     "fs-extra": "8.1.0",
     "gh-pages": "2.1.1",
+    "git-branch-is": "^3.0.0",
     "hint": "^5.2.2",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "husky": "3.0.4",

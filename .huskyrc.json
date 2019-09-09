@@ -1,6 +1,6 @@
 {
   "hooks": {
     "pre-commit": "lint-staged",
-    "pre-push": "yarn test:unit"
+    "pre-push": "if git-branch-is master; then yarn test:unit; fi"
   }
 }
