@@ -1,13 +1,13 @@
 {
   "main.css": "/sketchboard/static/css/main.34e39cce.chunk.css",
-  "main.js": "/sketchboard/static/js/main.e74f2895.chunk.js",
-  "main.js.map": "/sketchboard/static/js/main.e74f2895.chunk.js.map",
+  "main.js": "/sketchboard/static/js/main.419b29e9.chunk.js",
+  "main.js.map": "/sketchboard/static/js/main.419b29e9.chunk.js.map",
   "runtime~main.js": "/sketchboard/static/js/runtime~main.dbfed3e7.js",
   "runtime~main.js.map": "/sketchboard/static/js/runtime~main.dbfed3e7.js.map",
-  "static/js/2.0b05dbfd.chunk.js": "/sketchboard/static/js/2.0b05dbfd.chunk.js",
-  "static/js/2.0b05dbfd.chunk.js.map": "/sketchboard/static/js/2.0b05dbfd.chunk.js.map",
+  "static/js/2.c72b1cb4.chunk.js": "/sketchboard/static/js/2.c72b1cb4.chunk.js",
+  "static/js/2.c72b1cb4.chunk.js.map": "/sketchboard/static/js/2.c72b1cb4.chunk.js.map",
   "index.html": "/sketchboard/index.html",
-  "precache-manifest.a74cac1b8db2fef0588c680447be3aea.js": "/sketchboard/precache-manifest.a74cac1b8db2fef0588c680447be3aea.js",
+  "precache-manifest.d9e3227245ad363ddd331ea87b9b9dea.js": "/sketchboard/precache-manifest.d9e3227245ad363ddd331ea87b9b9dea.js",
   "service-worker.js": "/sketchboard/service-worker.js",
   "static/css/main.34e39cce.chunk.css.map": "/sketchboard/static/css/main.34e39cce.chunk.css.map"
 }
