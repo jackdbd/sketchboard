@@ -66,6 +66,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         <div>
           <label htmlFor="fill">fill</label>
           <input
+            id="fill"
             name="fill"
             onChange={onFillChange}
             placeholder="e.g. #ff0000, red"
@@ -76,6 +77,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         <div>
           <label htmlFor="opacity">opacity</label>
           <input
+            id="opacity"
             name="opacity"
             onChange={onOpacityChange}
             placeholder="e.g. 0.5"
@@ -86,6 +88,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         <div>
           <label htmlFor="stroke">stroke</label>
           <input
+            id="stroke"
             name="stroke"
             onChange={onStrokeChange}
             placeholder="e.g. #ff0000, red"
@@ -95,7 +98,11 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         </div>
         <div>
           <label htmlFor="stroke-dasharray">stroke-dasharray</label>
-          <select name="stroke-dasharray" onChange={onStrokeDashArrayChange}>
+          <select
+            id="stroke-dasharray"
+            name="stroke-dasharray"
+            onChange={onStrokeDashArrayChange}
+          >
             <option value={DashArray.One}>One</option>
             <option value={DashArray.Two}>Two</option>
             <option value={DashArray.Three}>Three</option>
@@ -104,6 +111,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         <div>
           <label htmlFor="stroke-opacity">stroke-opacity</label>
           <input
+            id="stroke-opacity"
             name="stroke-opacity"
             onChange={onStrokeOpacityChange}
             placeholder="e.g. 0.5"
@@ -115,6 +123,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
         <div>
           <label htmlFor="stroke-width">stroke-width</label>
           <input
+            id="stroke-width"
             name="stroke-width"
             onChange={onStrokeWidthChange}
             placeholder="e.g. 20px"

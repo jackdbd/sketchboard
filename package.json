@@ -27,7 +27,9 @@
     "test": "concurrently \"yarn test:unit\" \"yarn test:regressions\"",
     "test:unit": "jest --testPathIgnorePatterns regressions --verbose",
     "test:regressions": "echo 'TODO: create visual regressions with puppeteer or cypress'",
-    "updtr": "updtr --use yarn --test-stdout"
+    "updtr": "updtr --use yarn --test-stdout",
+    "webhint": "hint https://jackdbd.github.io/sketchboard/",
+    "webhint:report": "python -m webbrowser ~/repos/sketchboard/hint-report/https-jackdbd-github-io-sketchboard/index.html"
   },
   "dependencies": {
     "@sentry/browser": "^5.6.3",
@@ -43,6 +45,7 @@
     "@babel/plugin-transform-react-jsx": "7.3.0",
     "@babel/plugin-transform-react-jsx-self": "7.2.0",
     "@babel/plugin-transform-react-jsx-source": "7.5.0",
+    "@hint/configuration-web-recommended": "^7.1.0",
     "@packtracker/webpack-plugin": "2.2.0",
     "@react-mock/state": "^0.1.8",
     "@testing-library/jest-dom": "^4.1.0",
@@ -80,6 +83,7 @@
     "fork-ts-checker-webpack-plugin-alt": "0.4.14",
     "fs-extra": "8.1.0",
     "gh-pages": "2.1.1",
+    "hint": "^5.2.2",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "husky": "3.0.4",
     "identity-obj-proxy": "3.0.0",
