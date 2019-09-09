@@ -18,11 +18,9 @@ import {
 import { Circle, Triangle } from './shapes';
 import { coordinatesFromEvent, euclideanDistance } from './utils';
 import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
-
 import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
 
 import styles from './styles.module.css';
-import { DashArray } from '../ShapeStyleConfig/types';
 
 export const DIV_CONTAINER_TEST_ID = 'board-container-test-id';
 export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
@@ -74,8 +72,8 @@ export const Board: React.FC<{}> = () => {
             renderCircleFeedbackInSVG(refSvg.current, feedbackCircle, {
               fill: 'none',
               opacity: '0.5',
-              stroke: 'blue',
-              'stroke-dasharray': DashArray.One,
+              stroke: shapeStyleConfig.stroke,
+              'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
             });
           }
         };

@@ -69,8 +69,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
             id="fill"
             name="fill"
             onChange={onFillChange}
-            placeholder="e.g. #ff0000, red"
-            type="text"
+            type="color"
             value={state.fill}
           />
         </div>
@@ -78,11 +77,13 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
           <label htmlFor="opacity">opacity</label>
           <input
             id="opacity"
+            max="1"
+            min="0"
             name="opacity"
             onChange={onOpacityChange}
-            placeholder="e.g. 0.5"
-            type="text"
-            value={state['opacity']}
+            step="0.1"
+            type="number"
+            value={state.opacity}
           />
         </div>
         <div>
@@ -91,8 +92,7 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
             id="stroke"
             name="stroke"
             onChange={onStrokeChange}
-            placeholder="e.g. #ff0000, red"
-            type="text"
+            type="color"
             value={state.stroke}
           />
         </div>
@@ -103,20 +103,29 @@ export const ShapeStyleConfig: React.FC<{}> = () => {
             name="stroke-dasharray"
             onChange={onStrokeDashArrayChange}
           >
-            <option value={DashArray.One}>One</option>
-            <option value={DashArray.Two}>Two</option>
-            <option value={DashArray.Three}>Three</option>
+            <option value={'none'}>No dashes nor gaps</option>
+            <optgroup label="Dashes and gaps of the same size">
+              <option value={DashArray.Three}>{DashArray.Three}</option>
+              <option value={DashArray.Four}>{DashArray.Four}</option>
+            </optgroup>
+            <optgroup label="Dashes and gaps of different size">
+              <option value={DashArray.FiveTen}>{DashArray.FiveTen}</option>
+              <option value={DashArray.Odd}>{DashArray.Odd}</option>
+              <option value={DashArray.Even}>{DashArray.Even}</option>
+              <option value={DashArray.Other}>{DashArray.Other}</option>
+            </optgroup>
           </select>
         </div>
         <div>
           <label htmlFor="stroke-opacity">stroke-opacity</label>
           <input
             id="stroke-opacity"
+            max="1"
+            min="0"
             name="stroke-opacity"
             onChange={onStrokeOpacityChange}
-            placeholder="e.g. 0.5"
-            style={{ maxWidth: '5rem' }}
-            type="text"
+            step="0.1"
+            type="number"
             value={state['stroke-opacity']}
           />
         </div>

@@ -7,7 +7,7 @@ export const initialState: State = {
   opacity: '1',
   stroke: '#6A1B9A',
   'stroke-dasharray': undefined,
-  'stroke-opacity': undefined,
+  'stroke-opacity': '1',
   'stroke-width': '10px',
 };
 

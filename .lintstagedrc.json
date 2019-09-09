@@ -1,4 +1,4 @@
 {
   "*.css": "yarn run lint:css",
-  "*.{js,jsx,ts,tsx}": "yarn run lint:js"
+  "*.{js,jsx,ts,tsx}": ["yarn run lint:js", "git add"]
 }

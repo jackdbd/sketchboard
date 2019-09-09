@@ -1,7 +1,10 @@
 export enum DashArray {
-  One = '5,5',
-  Two = '10,10',
-  Three = '20,10,5,5,5,10',
+  Three = '3',
+  Four = '4',
+  FiveTen = '5 10',
+  Odd = '4 1 2',
+  Even = '4 1 2 3',
+  Other = '20 10 5 5 5 10',
 }
 
 export interface ShapeStyleConfigState {
