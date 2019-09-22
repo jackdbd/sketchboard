@@ -57,8 +57,7 @@ export const makeObservableOfCircleFeedback = (
     tap(logEventOnlyInDebug)
   );
 
-  // after mousedown, take mousemove events until the third click.
-
+  // after mousedown, take mousemove events until the second click.
   return mousedown$.pipe(
     mergeMap(() => {
       return mousemove$;
