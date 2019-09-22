@@ -1,4 +1,4 @@
-import { Circle, Triangle } from './shapes';
+import { Circle, Point, Triangle } from './shapes';
 import { Coords, PairClicks, TripletClicks } from './types';
 
 export const euclideanDistance = (p: Coords, q: Coords): number => {
@@ -23,15 +23,12 @@ export const makeTriangleFromTriplet = (triplet: TripletClicks): Triangle => {
   return { p0, p1, p2 };
 };
 
-export function coordinatesFromEvent(
+export const pointFromEvent = (
   event: React.MouseEvent<HTMLElement, MouseEvent> | MouseEvent
-): Coords {
-  const domRect = (event.target as HTMLDivElement).getBoundingClientRect();
+): Point => {
   const { clientX, clientY } = event;
-  const x = clientX - domRect.left;
-  const y = clientY - domRect.top;
-  return [x, y];
-}
+  return { x: clientX, y: clientY };
+};
 
 export const makeTripletOfClicks = (
   events: [PairClicks, PairClicks]
