@@ -14,9 +14,13 @@ import {
   renderCircleFeedbackInSVG,
   renderTriangleInSVG,
   cleanupCircleFeedbackInSVG,
+  renderLineFeedbackInSVG,
+  renderSecondLineFeedbackInSVG,
+  renderThirdLineFeedbackInSVG,
+  cleanupTriangleFeedbackInSVG,
 } from './renderers';
-import { Circle, Triangle } from './shapes';
-import { coordinatesFromEvent, euclideanDistance } from './utils';
+import { Circle, Point, Triangle } from './shapes';
+import { euclideanDistance, pointFromEvent } from './utils';
 import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
 import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
 
@@ -36,7 +40,8 @@ export const Board: React.FC<{}> = () => {
   const refSvg = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    let circleCenter: { x: number; y: number } | undefined = undefined;
+    const clickedPoints: Point[] = [];
+
     if (!refDiv.current) {
       throw new Error(REF_NOT_READY);
     }
@@ -47,8 +52,7 @@ export const Board: React.FC<{}> = () => {
 
     const obs$ = makeObservableOfClickEventsOnDiv(refDiv.current);
     const obs = (event: MouseEvent): void => {
-      const [x, y] = coordinatesFromEvent(event);
-      circleCenter = shape === ShapeOption.Circle ? { x, y } : undefined;
+      clickedPoints.push(pointFromEvent(event));
     };
     const sub = obs$.subscribe(obs);
 
@@ -60,13 +64,13 @@ export const Board: React.FC<{}> = () => {
           refDiv.current
         );
         const observerFeedback = (event: MouseEvent): void => {
-          if (refSvg.current && circleCenter) {
-            const { x, y } = circleCenter;
-            const [x1, y1] = coordinatesFromEvent(event);
-            const r = euclideanDistance([x, y], [x1, y1]);
+          if (refSvg.current && clickedPoints.length) {
+            const p0 = clickedPoints[0];
+            const p1 = pointFromEvent(event);
+            const r = euclideanDistance([p0.x, p0.y], [p1.x, p1.y]);
             const feedbackCircle = {
-              cx: x,
-              cy: y,
+              cx: p0.x,
+              cy: p0.y,
               r,
             };
             renderCircleFeedbackInSVG(refSvg.current, feedbackCircle, {
@@ -97,10 +101,52 @@ export const Board: React.FC<{}> = () => {
       }
 
       case ShapeOption.Triangle: {
+        const obsFeedback$ = makeObservableOfMouseMoveEventsOnDiv(
+          refDiv.current
+        );
+        const observerFeedback = (event: MouseEvent): void => {
+          if (refSvg.current) {
+            switch (clickedPoints.length) {
+              case 0: {
+                break;
+              }
+              case 1: {
+                const p0 = clickedPoints[0];
+                const p1 = pointFromEvent(event);
+                renderLineFeedbackInSVG(refSvg.current, p0, p1, {
+                  stroke: shapeStyleConfig.stroke,
+                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
+                });
+                break;
+              }
+              case 2: {
+                const p0 = clickedPoints[0];
+                const p1 = clickedPoints[1];
+                const p2 = pointFromEvent(event);
+                renderSecondLineFeedbackInSVG(refSvg.current, p0, p2, {
+                  stroke: shapeStyleConfig.stroke,
+                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
+                });
+                renderThirdLineFeedbackInSVG(refSvg.current, p1, p2, {
+                  stroke: shapeStyleConfig.stroke,
+                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
+                });
+                break;
+              }
+              default: {
+                throw new Error(
+                  'ASSERT: clicked points can be one of: 0, 1, 2'
+                );
+              }
+            }
+          }
+        };
+
         const observable$ = makeObservableOfTriangles(refDiv.current);
         const observer = (triangle: Triangle): void => {
           if (refSvg.current) {
             renderTriangleInSVG(refSvg.current, triangle, shapeStyleConfig);
+            cleanupTriangleFeedbackInSVG(refSvg.current);
           }
           setSharedState({
             ...state,
@@ -110,6 +156,7 @@ export const Board: React.FC<{}> = () => {
         };
 
         subscription = observable$.subscribe(observer);
+        subFeedback = obsFeedback$.subscribe(observerFeedback);
         break;
       }
 
