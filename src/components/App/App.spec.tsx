@@ -3,26 +3,22 @@ import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 
 import { App } from './App';
-import {
-  DIV_CONTAINER_TEST_ID as BOARD_DIV,
-  SVG_BOARD_TEST_ID as BOARD_SVG,
-} from '../Board';
+import { SVG_BOARD_TEST_ID as BOARD_SVG } from '../Board';
 import { DIV_CONTAINER_TEST_ID as ERROR_DIV } from '../ErrorBoundary';
 import { SHAPE_SELECT_TEST_ID, ShapeOption } from '../ShapeSelect';
 
 describe('App', () => {
   it('renders one svg polygon in the board with three clicks (when the selected shape is "Triangle")', () => {
     const { getByTestId } = render(<App />);
-    const div = getByTestId(BOARD_DIV);
     const svg = getByTestId(BOARD_SVG);
 
     fireEvent.change(getByTestId(SHAPE_SELECT_TEST_ID), {
       target: { value: ShapeOption.Triangle },
     });
 
-    fireEvent.click(div, { clientX: 10, clientY: 10 });
-    fireEvent.click(div, { clientX: 50, clientY: 10 });
-    fireEvent.click(div, { clientX: 30, clientY: 30 });
+    fireEvent.click(svg, { clientX: 10, clientY: 10 });
+    fireEvent.click(svg, { clientX: 50, clientY: 10 });
+    fireEvent.click(svg, { clientX: 30, clientY: 30 });
 
     expect(svg.firstChild).not.toBeNull();
     if (svg.firstChild) {

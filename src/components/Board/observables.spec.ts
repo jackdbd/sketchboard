@@ -2,9 +2,9 @@ import { Observable, Subscription } from 'rxjs';
 
 import {
   makeObservableOfCircles,
-  makeObservableOfClickEventsOnDiv,
+  makeObservableOfMouseEventOnTarget,
 } from './observables';
-import { ICircle } from './shapes';
+import { Circle } from './shapes';
 import { euclideanDistance } from './utils';
 
 const UNHANDLED_MOUSE_EVENTS = [
@@ -18,7 +18,7 @@ const UNHANDLED_MOUSE_EVENTS = [
   'mouseup',
 ];
 
-describe('makeObservableOfClickEventsOnDiv', () => {
+describe('makeObservableOfMouseEventOnTarget', () => {
   let anotherDiv: HTMLDivElement;
   let div: HTMLDivElement;
   let observable$: Observable<MouseEvent>;
@@ -30,7 +30,7 @@ describe('makeObservableOfClickEventsOnDiv', () => {
   beforeAll(() => {
     anotherDiv = document.createElement('div');
     div = document.createElement('div');
-    observable$ = makeObservableOfClickEventsOnDiv(div);
+    observable$ = makeObservableOfMouseEventOnTarget(div, 'click');
   });
 
   beforeEach(() => {
@@ -68,7 +68,7 @@ describe('makeObservableOfClickEventsOnDiv', () => {
 
 describe('makeObservableOfCircles', () => {
   let div: HTMLDivElement;
-  let observable$: Observable<ICircle>;
+  let observable$: Observable<Circle>;
   const observer0 = jest.fn();
   const observer1 = jest.fn();
   let subscription0: Subscription;
@@ -76,7 +76,8 @@ describe('makeObservableOfCircles', () => {
 
   beforeAll(() => {
     div = document.createElement('div');
-    observable$ = makeObservableOfCircles(div);
+    const click$ = makeObservableOfMouseEventOnTarget(div, 'click');
+    observable$ = makeObservableOfCircles(click$);
   });
 
   beforeEach(() => {

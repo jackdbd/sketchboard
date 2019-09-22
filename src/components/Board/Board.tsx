@@ -4,23 +4,19 @@ import { Subscription } from 'rxjs';
 import { useSharedState } from '../../hooks';
 import {
   boardSubject$,
+  makeObservableOfCircleFeedback,
   makeObservableOfCircles,
   makeObservableOfTriangles,
-  makeObservableOfMouseMoveEventsOnDiv,
-  makeObservableOfClickEventsOnDiv,
+  makeObservableOfTriangleFeedback,
+  makeObservableOfMouseEventOnTarget,
 } from './observables';
 import {
-  renderCircleInSVG,
-  renderCircleFeedbackInSVG,
-  renderTriangleInSVG,
-  cleanupCircleFeedbackInSVG,
-  renderLineFeedbackInSVG,
-  renderSecondLineFeedbackInSVG,
-  renderThirdLineFeedbackInSVG,
-  cleanupTriangleFeedbackInSVG,
-} from './renderers';
+  makeObserverFeedbackCirle,
+  makeObserverFeedbackPolygon,
+} from './observers';
+import { renderCircleInSVG, renderTriangleInSVG } from './renderers';
 import { Circle, Point, Triangle } from './shapes';
-import { euclideanDistance, pointFromEvent } from './utils';
+import { pointFromEvent } from './utils';
 import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
 import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
 
@@ -31,6 +27,9 @@ export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
 
 const REF_NOT_READY = 'ASSERT: ref NOT ready!';
 
+const DEBUG = false;
+// const DEBUG = true;
+
 export const Board: React.FC<{}> = () => {
   const [state, setSharedState] = useSharedState(boardSubject$);
   const [{ shape }] = useSharedState(shapePickerSubject$);
@@ -40,52 +39,121 @@ export const Board: React.FC<{}> = () => {
   const refSvg = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const clickedPoints: Point[] = [];
-
-    if (!refDiv.current) {
-      throw new Error(REF_NOT_READY);
-    }
-
     if (!refSvg.current) {
       throw new Error(REF_NOT_READY);
     }
 
-    const obs$ = makeObservableOfClickEventsOnDiv(refDiv.current);
-    const obs = (event: MouseEvent): void => {
+    // --- Observables from simple mouse events ($) --- //
+    const click$ = makeObservableOfMouseEventOnTarget(refSvg.current, 'click');
+    const mousedown$ = makeObservableOfMouseEventOnTarget(
+      refSvg.current,
+      'mousedown'
+    );
+    const mousemove$ = makeObservableOfMouseEventOnTarget(
+      refSvg.current,
+      'mousemove'
+    );
+
+    /**
+     * Keep track of all click events until the dependencies of this React
+     * `useEffect` hook trigger a re-run of this side-effect.
+     */
+    const clickedPoints: Point[] = [];
+    const clickObserver = (event: MouseEvent): void => {
       clickedPoints.push(pointFromEvent(event));
     };
-    const sub = obs$.subscribe(obs);
+    const clickSub = click$.subscribe(clickObserver);
 
-    let subscription: Subscription;
-    let subFeedback: Subscription;
+    /**
+     * Create a subscription for each visual feedback when drawing a shape.
+     * Every time a new user interaction contributes to the definition of a
+     * shape (e.g. the 1st/2nd/3rd click when drawing a triangle), this
+     * component re-renders this visual aid (it does NOT update the state, but
+     * it does depend on the state).
+     */
+    let sub: Subscription;
     switch (shape) {
       case ShapeOption.Circle: {
-        const obsFeedback$ = makeObservableOfMouseMoveEventsOnDiv(
-          refDiv.current
+        const feedback$ = makeObservableOfCircleFeedback(
+          click$,
+          mousedown$,
+          mousemove$,
+          DEBUG
         );
-        const observerFeedback = (event: MouseEvent): void => {
-          if (refSvg.current && clickedPoints.length) {
-            const p0 = clickedPoints[0];
-            const p1 = pointFromEvent(event);
-            const r = euclideanDistance([p0.x, p0.y], [p1.x, p1.y]);
-            const feedbackCircle = {
-              cx: p0.x,
-              cy: p0.y,
-              r,
-            };
-            renderCircleFeedbackInSVG(refSvg.current, feedbackCircle, {
-              fill: 'none',
-              opacity: '0.5',
-              stroke: shapeStyleConfig.stroke,
-              'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-            });
-          }
-        };
-        const observable$ = makeObservableOfCircles(refDiv.current);
+        const observer = makeObserverFeedbackCirle(
+          refSvg.current,
+          clickedPoints,
+          shapeStyleConfig
+        );
+        sub = feedback$.subscribe(observer);
+        break;
+      }
+
+      case ShapeOption.Triangle: {
+        const feedback$ = makeObservableOfTriangleFeedback(
+          click$,
+          mousedown$,
+          mousemove$,
+          DEBUG
+        );
+        const observer = makeObserverFeedbackPolygon(
+          refSvg.current,
+          clickedPoints,
+          shapeStyleConfig
+        );
+        sub = feedback$.subscribe(observer);
+        break;
+      }
+
+      default:
+        const msg = `TODO: ${shape} not yet implemented`;
+        throw new Error(msg);
+    }
+
+    // Cleanup subscriptions so we don't introduce memory leaks.
+    // https://reactjs.org/docs/hooks-effect.html#example-using-hooks-1
+    return function cleanup(): void {
+      clickSub.unsubscribe();
+      if (sub) {
+        sub.unsubscribe();
+      }
+    };
+
+    /*
+     * This side-effect hook needs to re-run every time a new triangle is drawn
+     * because we need to call the observable's factory
+     * `makeObservableOfTriangleFeedback`, so that factory can create once again
+     * an observable that completes after 3 click events on the SVG board (we
+     * want an observable that completes so we can ckeanup the SVG board in the
+     * observer subscribed to this observable).
+     */
+  }, [
+    refSvg,
+    shape,
+    shapeStyleConfig,
+    state.circlesDrawn,
+    state.trianglesDrawn,
+  ]);
+
+  useEffect(() => {
+    if (!refSvg.current) {
+      throw new Error(REF_NOT_READY);
+    }
+
+    const click$ = makeObservableOfMouseEventOnTarget(refSvg.current, 'click');
+
+    /**
+     * Create a subscription for each shape.
+     * Every time a new shape is created by the user, this component re-renders
+     * the shape and updates the state.
+     */
+    let sub: Subscription;
+    switch (shape) {
+      case ShapeOption.Circle: {
+        const circle$ = makeObservableOfCircles(click$);
         const observer = (circle: Circle): void => {
           if (refSvg.current) {
             renderCircleInSVG(refSvg.current, circle, shapeStyleConfig);
-            cleanupCircleFeedbackInSVG(refSvg.current);
           }
           setSharedState({
             ...state,
@@ -95,58 +163,15 @@ export const Board: React.FC<{}> = () => {
           });
         };
 
-        subscription = observable$.subscribe(observer);
-        subFeedback = obsFeedback$.subscribe(observerFeedback);
+        sub = circle$.subscribe(observer);
         break;
       }
 
       case ShapeOption.Triangle: {
-        const obsFeedback$ = makeObservableOfMouseMoveEventsOnDiv(
-          refDiv.current
-        );
-        const observerFeedback = (event: MouseEvent): void => {
-          if (refSvg.current) {
-            switch (clickedPoints.length) {
-              case 0: {
-                break;
-              }
-              case 1: {
-                const p0 = clickedPoints[0];
-                const p1 = pointFromEvent(event);
-                renderLineFeedbackInSVG(refSvg.current, p0, p1, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                break;
-              }
-              case 2: {
-                const p0 = clickedPoints[0];
-                const p1 = clickedPoints[1];
-                const p2 = pointFromEvent(event);
-                renderSecondLineFeedbackInSVG(refSvg.current, p0, p2, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                renderThirdLineFeedbackInSVG(refSvg.current, p1, p2, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                break;
-              }
-              default: {
-                throw new Error(
-                  'ASSERT: clicked points can be one of: 0, 1, 2'
-                );
-              }
-            }
-          }
-        };
-
-        const observable$ = makeObservableOfTriangles(refDiv.current);
+        const triangle$ = makeObservableOfTriangles(click$);
         const observer = (triangle: Triangle): void => {
           if (refSvg.current) {
             renderTriangleInSVG(refSvg.current, triangle, shapeStyleConfig);
-            cleanupTriangleFeedbackInSVG(refSvg.current);
           }
           setSharedState({
             ...state,
@@ -155,8 +180,7 @@ export const Board: React.FC<{}> = () => {
           });
         };
 
-        subscription = observable$.subscribe(observer);
-        subFeedback = obsFeedback$.subscribe(observerFeedback);
+        sub = triangle$.subscribe(observer);
         break;
       }
 
@@ -166,13 +190,9 @@ export const Board: React.FC<{}> = () => {
     }
 
     return (): void => {
-      if (subscription) {
-        subscription.unsubscribe();
+      if (sub) {
+        sub.unsubscribe();
       }
-      if (subFeedback) {
-        subFeedback.unsubscribe();
-      }
-      sub.unsubscribe();
     };
   }, [setSharedState, shape, shapeStyleConfig, state]);
 

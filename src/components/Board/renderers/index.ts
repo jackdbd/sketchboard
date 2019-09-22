@@ -5,9 +5,7 @@ import { initialState as initialShapeStyleConfigState } from '../../ShapeStyleCo
 const NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
 const CIRCLE_FEEDBACK_ID = 'circle-feedback';
-const LINE_0_FEEDBACK_ID = 'line-0-feedback';
-const LINE_1_FEEDBACK_ID = 'line-1-feedback';
-const LINE_2_FEEDBACK_ID = 'line-2-feedback';
+const POLYGON_FEEDBACK_ID = 'polygon-feedback';
 
 const setStyleAttributes = <T extends SVGElement>(
   el: T,
@@ -128,72 +126,63 @@ export const renderLineInSVG = (
   svg.appendChild(makeSVGLine(p0, p1, config, id));
 };
 
-const updateLineInSVG = (
-  el: SVGLineElement,
-  p0: Point,
-  p1: Point,
-  config?: ShapeStyleConfigState
+const makePointsString = (acc: string, p: Point): string => {
+  return `${acc}${p.x},${p.y} `;
+};
+
+export const cleanupPolygonFeedbackInSVG = (svg: SVGSVGElement): void => {
+  const el = document.querySelector(`#${POLYGON_FEEDBACK_ID}`);
+  if (el) {
+    svg.removeChild(el);
+  }
+};
+
+const updateSVGPolygonElement = (
+  el: SVGPolygonElement,
+  points: Point[],
+  config: ShapeStyleConfigState
 ): void => {
-  el.setAttribute('x1', `${p0.x}`);
-  el.setAttribute('y1', `${p0.y}`);
-  el.setAttribute('x2', `${p1.x}`);
-  el.setAttribute('y2', `${p1.y}`);
+  el.setAttribute('points', points.reduce(makePointsString, ''));
   setStyleAttributes(el, config);
 };
 
-export const renderLineFeedbackInSVG = (
-  svg: SVGSVGElement,
-  p0: Point,
-  p1: Point,
-  config?: ShapeStyleConfigState
-): void => {
-  const el = document.querySelector(`#${LINE_0_FEEDBACK_ID}`);
-  if (el) {
-    updateLineInSVG(el as SVGLineElement, p0, p1, config);
-  } else {
-    renderLineInSVG(svg, p0, p1, config, LINE_0_FEEDBACK_ID);
-  }
+const makeSVGPolygon = (
+  points: Point[],
+  config: ShapeStyleConfigState,
+  id: string
+): SVGPolygonElement => {
+  const el = document.createElementNS(NAMESPACE_URI, 'polygon');
+  el.setAttribute('id', id);
+  updateSVGPolygonElement(el, points, config);
+  return el;
 };
 
-export const renderSecondLineFeedbackInSVG = (
+export const renderPolygonInSVG = (
   svg: SVGSVGElement,
-  p0: Point,
-  p1: Point,
-  config?: ShapeStyleConfigState
+  points: Point[],
+  config: ShapeStyleConfigState,
+  id: string
 ): void => {
-  const el = document.querySelector(`#${LINE_1_FEEDBACK_ID}`);
-  if (el) {
-    updateLineInSVG(el as SVGLineElement, p0, p1, config);
-  } else {
-    renderLineInSVG(svg, p0, p1, config, LINE_1_FEEDBACK_ID);
-  }
+  svg.appendChild(makeSVGPolygon(points, config, id));
 };
 
-export const renderThirdLineFeedbackInSVG = (
-  svg: SVGSVGElement,
-  p0: Point,
-  p1: Point,
-  config?: ShapeStyleConfigState
+const updatePolygonInSVG = (
+  el: SVGPolygonElement,
+  points: Point[],
+  config: ShapeStyleConfigState
 ): void => {
-  const el = document.querySelector(`#${LINE_2_FEEDBACK_ID}`);
-  if (el) {
-    updateLineInSVG(el as SVGLineElement, p0, p1, config);
-  } else {
-    renderLineInSVG(svg, p0, p1, config, LINE_2_FEEDBACK_ID);
-  }
+  updateSVGPolygonElement(el, points, config);
 };
 
-export const cleanupTriangleFeedbackInSVG = (svg: SVGSVGElement): void => {
-  const el0 = document.querySelector(`#${LINE_0_FEEDBACK_ID}`);
-  if (el0) {
-    svg.removeChild(el0);
-  }
-  const el1 = document.querySelector(`#${LINE_1_FEEDBACK_ID}`);
-  if (el1) {
-    svg.removeChild(el1);
-  }
-  const el2 = document.querySelector(`#${LINE_2_FEEDBACK_ID}`);
-  if (el2) {
-    svg.removeChild(el2);
+export const renderPolygonFeedbackInSVG = (
+  svg: SVGSVGElement,
+  points: Point[],
+  config: ShapeStyleConfigState
+): void => {
+  const el = document.querySelector(`#${POLYGON_FEEDBACK_ID}`);
+  if (el) {
+    updatePolygonInSVG(el as SVGPolygonElement, points, config);
+  } else {
+    renderPolygonInSVG(svg, points, config, POLYGON_FEEDBACK_ID);
   }
 };
