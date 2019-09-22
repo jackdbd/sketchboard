@@ -1,46 +1,62 @@
+import { PartialObserver } from 'rxjs';
+
 import {
-  renderLineFeedbackInSVG,
-  renderSecondLineFeedbackInSVG,
-  renderThirdLineFeedbackInSVG,
+  renderPolygonFeedbackInSVG,
+  renderCircleFeedbackInSVG,
+  cleanupPolygonFeedbackInSVG,
+  cleanupCircleFeedbackInSVG,
 } from './renderers';
 import { Point } from './shapes';
 import { ShapeStyleConfigState, DashArray } from '../ShapeStyleConfig/types';
-import { pointFromEvent } from './utils';
+import { pointFromEvent, euclideanDistance } from './utils';
 
-export const makeObserver = (
+export const makeObserverFeedbackPolygon = (
   svg: SVGSVGElement,
   clicks: Point[],
   config: ShapeStyleConfigState
-) => {
-  //
-  return (event: MouseEvent): void => {
-    const feedbackConfig = {
-      ...config,
-      'stroke-dasharray': DashArray.Four,
-    };
-    if (svg) {
-      switch (clicks.length) {
-        case 0: {
-          break;
-        }
-        case 1: {
-          const p0 = clicks[0];
-          const p1 = pointFromEvent(event);
-          renderLineFeedbackInSVG(svg, p0, p1, feedbackConfig);
-          break;
-        }
-        case 2: {
-          const p0 = clicks[0];
-          const p1 = clicks[1];
-          const p2 = pointFromEvent(event);
-          renderSecondLineFeedbackInSVG(svg, p0, p2, feedbackConfig);
-          renderThirdLineFeedbackInSVG(svg, p1, p2, feedbackConfig);
-          break;
-        }
-        default: {
-          throw new Error('ASSERT: clicked points can be one of: 0, 1, 2');
-        }
+): PartialObserver<MouseEvent> => {
+  const feedbackConfig = {
+    ...config,
+    'stroke-dasharray': DashArray.Four,
+  };
+  return {
+    complete: (): void => {
+      cleanupPolygonFeedbackInSVG(svg);
+    },
+
+    next: (event: MouseEvent): void => {
+      const points = [...clicks, pointFromEvent(event)];
+      renderPolygonFeedbackInSVG(svg, points, feedbackConfig);
+    },
+  };
+};
+
+export const makeObserverFeedbackCirle = (
+  svg: SVGSVGElement,
+  clicks: Point[],
+  config: ShapeStyleConfigState
+): PartialObserver<MouseEvent> => {
+  const feedbackConfig = {
+    ...config,
+    'stroke-dasharray': DashArray.Four,
+  };
+  return {
+    complete: (): void => {
+      cleanupCircleFeedbackInSVG(svg);
+    },
+
+    next: (event: MouseEvent): void => {
+      if (clicks.length) {
+        const points = [...clicks, pointFromEvent(event)];
+        const [p0, p1] = points;
+        const r = euclideanDistance([p0.x, p0.y], [p1.x, p1.y]);
+        const circle = {
+          cx: p0.x,
+          cy: p0.y,
+          r,
+        };
+        renderCircleFeedbackInSVG(svg, circle, feedbackConfig);
       }
-    }
+    },
   };
 };

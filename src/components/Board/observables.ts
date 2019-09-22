@@ -1,5 +1,12 @@
-import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
-import { map, pairwise } from 'rxjs/operators';
+import { BehaviorSubject, fromEvent, Observable, noop } from 'rxjs';
+import {
+  map,
+  pairwise,
+  mergeMap,
+  takeUntil,
+  tap,
+  bufferCount,
+} from 'rxjs/operators';
 import { FromEventTarget } from 'rxjs/internal/observable/fromEvent';
 
 import { Coords } from './types';
@@ -10,43 +17,75 @@ import {
 } from './utils';
 import { Circle, Triangle } from './shapes';
 
-const makeObservableOfClickEventsOnTarget = (
-  eventTarget: FromEventTarget<MouseEvent>
+export const makeObservableOfMouseEventOnTarget = (
+  eventTarget: FromEventTarget<MouseEvent>,
+  eventType: 'click' | 'mousedown' | 'mousemove'
 ): Observable<MouseEvent> => {
-  return fromEvent(eventTarget, 'click');
+  return fromEvent(eventTarget, eventType);
 };
-
-const makeObservableOfMouseMoveEventsOnTarget = (
-  eventTarget: FromEventTarget<MouseEvent>
-): Observable<MouseEvent> => {
-  return fromEvent(eventTarget, 'mousemove');
-};
-
-export const makeObservableOfMouseMoveEventsOnDiv = (
-  div: HTMLDivElement
-): Observable<MouseEvent> => makeObservableOfMouseMoveEventsOnTarget(div);
-
-export const makeObservableOfClickEventsOnDiv = (
-  div: HTMLDivElement
-): Observable<MouseEvent> => makeObservableOfClickEventsOnTarget(div);
 
 export const makeObservableOfCircles = (
-  div: HTMLDivElement
+  click$: Observable<MouseEvent>
 ): Observable<Circle> => {
-  return makeObservableOfClickEventsOnDiv(div).pipe(
+  return click$.pipe(
     pairwise(),
     map(makeCircleFromPairClicks)
   );
 };
 
 export const makeObservableOfTriangles = (
-  div: HTMLDivElement
+  click$: Observable<MouseEvent>
 ): Observable<Triangle> => {
-  return makeObservableOfClickEventsOnDiv(div).pipe(
+  return click$.pipe(
     pairwise(),
     pairwise(),
     map(makeTripletOfClicks),
     map(makeTriangleFromTriplet)
+  );
+};
+
+export const makeObservableOfCircleFeedback = (
+  click$: Observable<MouseEvent>,
+  mousedown$: Observable<MouseEvent>,
+  mousemove$: Observable<MouseEvent>,
+  debug?: boolean
+): Observable<MouseEvent> => {
+  const logEventOnlyInDebug = debug ? console.log : noop;
+
+  const twoClicks$ = click$.pipe(
+    bufferCount(2),
+    tap(logEventOnlyInDebug)
+  );
+
+  // after mousedown, take mousemove events until the third click.
+
+  return mousedown$.pipe(
+    mergeMap(() => {
+      return mousemove$;
+    }),
+    takeUntil(twoClicks$)
+  );
+};
+
+export const makeObservableOfTriangleFeedback = (
+  click$: Observable<MouseEvent>,
+  mousedown$: Observable<MouseEvent>,
+  mousemove$: Observable<MouseEvent>,
+  debug?: boolean
+): Observable<MouseEvent> => {
+  const logEventOnlyInDebug = debug ? console.log : noop;
+
+  const threeClicks$ = click$.pipe(
+    bufferCount(3),
+    tap(logEventOnlyInDebug)
+  );
+
+  // after mousedown, take mousemove events until the third click.
+  return mousedown$.pipe(
+    mergeMap(() => {
+      return mousemove$;
+    }),
+    takeUntil(threeClicks$)
   );
 };
 
