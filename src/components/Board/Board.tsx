@@ -14,9 +14,9 @@ import {
   renderCircleFeedbackInSVG,
   renderTriangleInSVG,
   cleanupCircleFeedbackInSVG,
-  renderLineFeedbackInSVG,
-  renderSecondLineFeedbackInSVG,
-  renderThirdLineFeedbackInSVG,
+  //   renderLineFeedbackInSVG,
+  //   renderSecondLineFeedbackInSVG,
+  //   renderThirdLineFeedbackInSVG,
   cleanupTriangleFeedbackInSVG,
 } from './renderers';
 import { Circle, Point, Triangle } from './shapes';
@@ -25,6 +25,7 @@ import { shapePickerSubject$, ShapeOption } from '../ShapeSelect';
 import { shapeStyleConfigSubject$ } from '../ShapeStyleConfig/observables';
 
 import styles from './styles.module.css';
+import { makeObserver } from './observers';
 
 export const DIV_CONTAINER_TEST_ID = 'board-container-test-id';
 export const SVG_BOARD_TEST_ID = 'board-svg-test-id';
@@ -104,43 +105,17 @@ export const Board: React.FC<{}> = () => {
         const obsFeedback$ = makeObservableOfMouseMoveEventsOnDiv(
           refDiv.current
         );
-        const observerFeedback = (event: MouseEvent): void => {
-          if (refSvg.current) {
-            switch (clickedPoints.length) {
-              case 0: {
-                break;
-              }
-              case 1: {
-                const p0 = clickedPoints[0];
-                const p1 = pointFromEvent(event);
-                renderLineFeedbackInSVG(refSvg.current, p0, p1, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                break;
-              }
-              case 2: {
-                const p0 = clickedPoints[0];
-                const p1 = clickedPoints[1];
-                const p2 = pointFromEvent(event);
-                renderSecondLineFeedbackInSVG(refSvg.current, p0, p2, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                renderThirdLineFeedbackInSVG(refSvg.current, p1, p2, {
-                  stroke: shapeStyleConfig.stroke,
-                  'stroke-dasharray': shapeStyleConfig['stroke-dasharray'],
-                });
-                break;
-              }
-              default: {
-                throw new Error(
-                  'ASSERT: clicked points can be one of: 0, 1, 2'
-                );
-              }
-            }
-          }
-        };
+        // let observerFeedback: Observer<MouseEvent>;
+        let observerFeedback: (event: MouseEvent) => void;
+        if (refSvg.current) {
+          observerFeedback = makeObserver(
+            refSvg.current,
+            clickedPoints,
+            shapeStyleConfig
+          );
+        } else {
+          observerFeedback = (): void => {};
+        }
 
         const observable$ = makeObservableOfTriangles(refDiv.current);
         const observer = (triangle: Triangle): void => {

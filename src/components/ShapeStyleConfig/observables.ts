@@ -8,7 +8,7 @@ export const initialState: State = {
   stroke: '#6A1B9A',
   'stroke-dasharray': undefined,
   'stroke-opacity': '1',
-  'stroke-width': '10px',
+  'stroke-width': '1px',
 };
 
 export const shapeStyleConfigSubject$ = new BehaviorSubject<State>(
