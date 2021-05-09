@@ -71,7 +71,7 @@
     "concurrently": "4.1.2",
     "constyble": "^1.2.0",
     "css-loader": "3.2.0",
-    "dotenv": "8.1.0",
+    "dotenv": "8.6.0",
     "dotenv-expand": "5.1.0",
     "eslint": "^6.3.0",
     "eslint-config-prettier": "^6.1.0",
